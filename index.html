@@ -24,7 +24,7 @@
     /* Mac風ウィンドウ本体 */
     .mac-window {
       width: 92%;
-      max-width: 1000px;
+      max-width: 1050px;
       height: 85vh;
       background-color: #0d1117;
       border: 1px solid #30363d;
@@ -84,7 +84,7 @@
 
     /* GitHub風サイドバー */
     .sidebar {
-      width: 250px;
+      width: 270px;
       background-color: #010409;
       border-right: 1px solid #30363d;
       display: flex;
@@ -130,7 +130,7 @@
     }
 
     .file-item {
-      padding: 8px 16px;
+      padding: 8px 12px 8px 16px;
       font-size: 13px;
       color: #c9d1d9;
       cursor: pointer;
@@ -157,21 +157,34 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       flex: 1;
+      margin-right: 8px;
     }
 
-    .delete-btn {
+    .file-actions {
+      display: flex;
+      gap: 4px;
       opacity: 0;
-      color: #f85149;
-      background: none;
-      border: none;
-      font-size: 12px;
-      cursor: pointer;
-      padding: 2px 4px;
+      transition: opacity 0.1s ease;
     }
 
-    .file-item:hover .delete-btn {
+    .file-item:hover .file-actions {
       opacity: 1;
     }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .rename-btn { color: #8b949e; }
+    .rename-btn:hover { color: #58a6ff; background-color: #21262d; }
+
+    .delete-btn { color: #f85149; }
+    .delete-btn:hover { background-color: #21262d; }
 
     /* エディタエリア */
     .editor-container {
@@ -181,6 +194,7 @@
       background-color: #0d1117;
     }
 
+    /* 上部タブバー（ファイル名 ＋ 最終更新時間） */
     .editor-tab {
       background-color: #161b22;
       padding: 8px 16px;
@@ -189,18 +203,29 @@
       border-bottom: 1px solid #30363d;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+    }
+
+    .tab-info {
+      display: flex;
+      align-items: center;
       gap: 6px;
     }
 
-    .editor-tab::before {
+    .tab-info::before {
       content: "📝";
       font-size: 10px;
+    }
+
+    .last-edited {
+      font-size: 11px;
+      color: #484f58;
     }
 
     textarea {
       flex: 1;
       background-color: transparent;
-      color: #58a6ff; /* GitHubシアンブルー系フォント */
+      color: #58a6ff;
       border: none;
       padding: 20px;
       font-family: inherit;
@@ -245,18 +270,34 @@
 
       <!-- 右：エディタエリア -->
       <div class="editor-container">
-        <div class="editor-tab" id="current-tab-title">untitled.md</div>
+        <div class="editor-tab">
+          <span class="tab-info" id="current-tab-title">untitled.md</span>
+          <span class="last-edited" id="last-edited-time">--</span>
+        </div>
         <textarea id="editor" placeholder="// Type your text here..." spellcheck="false"></textarea>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = 'github_mac_notes_data';
-    const ACTIVE_KEY = 'github_mac_active_note_id';
+    const STORAGE_KEY = 'github_mac_notes_data_v2';
+    const ACTIVE_KEY = 'github_mac_active_note_id_v2';
+
+    // 日時フォーマット関数 (YYYY/MM/DD HH:mm:ss)
+    function formatTimestamp(isoString) {
+      if (!isoString) return '未編集';
+      const d = new Date(isoString);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
 
     let notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
-      { id: '1', title: 'welcome.md', content: '// GitHub風のマルチメモへようこそ！\n// 左のサイドバーからメモの追加・切り替えができます。' }
+      { 
+        id: '1', 
+        title: 'welcome.md', 
+        content: '// GitHub風のマルチメモへようこそ！\n// ホバー時に表示される「✏️」で名前変更、「✕」で削除ができます。',
+        updatedAt: new Date().toISOString()
+      }
     ];
     let activeNoteId = localStorage.getItem(ACTIVE_KEY) || notes[0].id;
 
@@ -264,6 +305,7 @@
     const editor = document.getElementById('editor');
     const status = document.getElementById('status');
     const currentTabTitle = document.getElementById('current-tab-title');
+    const lastEditedTimeEl = document.getElementById('last-edited-time');
     const windowTitle = document.getElementById('window-title');
     const newNoteBtn = document.getElementById('new-note-btn');
 
@@ -279,16 +321,35 @@
         nameSpan.textContent = note.title;
         nameSpan.onclick = () => switchNote(note.id);
 
+        // ボタンコンテナ
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'file-actions';
+
+        // 名前変更ボタン
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'action-btn rename-btn';
+        renameBtn.textContent = '✏️';
+        renameBtn.title = '名前を変更';
+        renameBtn.onclick = (e) => {
+          e.stopPropagation();
+          renameNote(note.id);
+        };
+
+        // 削除ボタン
         const delBtn = document.createElement('button');
-        delBtn.className = 'delete-btn';
+        delBtn.className = 'action-btn delete-btn';
         delBtn.textContent = '✕';
+        delBtn.title = '削除';
         delBtn.onclick = (e) => {
           e.stopPropagation();
           deleteNote(note.id);
         };
 
+        actionsDiv.appendChild(renameBtn);
+        if (notes.length > 1) actionsDiv.appendChild(delBtn);
+
         li.appendChild(nameSpan);
-        if (notes.length > 1) li.appendChild(delBtn);
+        li.appendChild(actionsDiv);
         fileListEl.appendChild(li);
       });
     }
@@ -298,6 +359,7 @@
       activeNoteId = activeNote.id;
       editor.value = activeNote.content;
       currentTabTitle.textContent = activeNote.title;
+      lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
       windowTitle.textContent = `workspace -- ${activeNote.title}`;
       renderSidebar();
     }
@@ -317,7 +379,8 @@
       const newNote = {
         id: Date.now().toString(),
         title: fileName.endsWith('.md') || fileName.endsWith('.txt') ? fileName : fileName + '.md',
-        content: ''
+        content: '',
+        updatedAt: new Date().toISOString()
       };
 
       notes.push(newNote);
@@ -325,6 +388,19 @@
       saveAll();
       loadActiveNote();
     });
+
+    // ノート名変更
+    function renameNote(id) {
+      const targetNote = notes.find(n => n.id === id);
+      if (!targetNote) return;
+
+      const newName = prompt('新しいファイル名を入力してください:', targetNote.title);
+      if (!newName || newName.trim() === '') return;
+
+      targetNote.title = newName.trim();
+      saveAll();
+      loadActiveNote();
+    }
 
     // ノート削除
     function deleteNote(id) {
@@ -354,7 +430,9 @@
         const activeNote = notes.find(n => n.id === activeNoteId);
         if (activeNote) {
           activeNote.content = editor.value;
+          activeNote.updatedAt = new Date().toISOString(); // 更新時間を設定
           saveAll();
+          lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
         }
         status.textContent = 'SAVED';
         status.className = 'status-indicator saved';
