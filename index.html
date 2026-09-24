@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Style Workspace</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0d1117, #161b22);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+      color: #c9d1d9;
+    }
+
+    /* Mac風ウィンドウ本体 */
+    .mac-window {
+      width: 92%;
+      max-width: 1000px;
+      height: 85vh;
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ヘッダー */
+    .mac-header {
+      background-color: #161b22;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #30363d;
+      user-select: none;
+    }
+
+    .mac-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mac-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .close { background-color: #ff5f56; }
+    .minimize { background-color: #ffbd2e; }
+    .maximize { background-color: #27c93f; }
+
+    .mac-title {
+      color: #8b949e;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      font-size: 11px;
+      color: #484f58;
+    }
+
+    .status-indicator.saved { color: #3fb950; }
+    .status-indicator.saving { color: #d29922; }
+
+    /* メインコンテンツ（2列レイアウト） */
+    .window-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* GitHub風サイドバー */
+    .sidebar {
+      width: 250px;
+      background-color: #010409;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .add-btn {
+      background: transparent;
+      border: 1px solid #30363d;
+      color: #58a6ff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+
+    .add-btn:hover {
+      background-color: #1f6feb;
+      color: #fff;
+      border-color: #1f6feb;
+    }
+
+    .file-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .file-item {
+      padding: 8px 16px;
+      font-size: 13px;
+      color: #c9d1d9;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 2px solid transparent;
+      transition: 0.1s;
+    }
+
+    .file-item:hover {
+      background-color: #161b22;
+    }
+
+    .file-item.active {
+      background-color: #161b22;
+      border-left-color: #58a6ff;
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    .file-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .delete-btn {
+      opacity: 0;
+      color: #f85149;
+      background: none;
+      border: none;
+      font-size: 12px;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    .file-item:hover .delete-btn {
+      opacity: 1;
+    }
+
+    /* エディタエリア */
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #0d1117;
+    }
+
+    .editor-tab {
+      background-color: #161b22;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #8b949e;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .editor-tab::before {
+      content: "📝";
+      font-size: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      background-color: transparent;
+      color: #58a6ff; /* GitHubシアンブルー系フォント */
+      border: none;
+      padding: 20px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      caret-color: #58a6ff;
+    }
+
+    /* スクロールバー */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #8b949e; }
+  </style>
+</head>
+<body>
+
+  <div class="mac-window">
+    <!-- Mac風ヘッダー -->
+    <div class="mac-header">
+      <div class="mac-buttons">
+        <span class="mac-btn close"></span>
+        <span class="mac-btn minimize"></span>
+        <span class="mac-btn maximize"></span>
+      </div>
+      <div class="mac-title" id="window-title">workspace -- notes</div>
+      <div id="status" class="status-indicator">READY</div>
+    </div>
+
+    <!-- 2列メインコンテンツ -->
+    <div class="window-body">
+      <!-- 左：GitHub風サイドバー -->
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <span>Files</span>
+          <button class="add-btn" id="new-note-btn">+ New</button>
+        </div>
+        <ul class="file-list" id="file-list"></ul>
+      </div>
+
+      <!-- 右：エディタエリア -->
+      <div class="editor-container">
+        <div class="editor-tab" id="current-tab-title">untitled.md</div>
+        <textarea id="editor" placeholder="// Type your text here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'github_mac_notes_data';
+    const ACTIVE_KEY = 'github_mac_active_note_id';
+
+    let notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [
+      { id: '1', title: 'welcome.md', content: '// GitHub風のマルチメモへようこそ！\n// 左のサイドバーからメモの追加・切り替えができます。' }
+    ];
+    let activeNoteId = localStorage.getItem(ACTIVE_KEY) || notes[0].id;
+
+    const fileListEl = document.getElementById('file-list');
+    const editor = document.getElementById('editor');
+    const status = document.getElementById('status');
+    const currentTabTitle = document.getElementById('current-tab-title');
+    const windowTitle = document.getElementById('window-title');
+    const newNoteBtn = document.getElementById('new-note-btn');
+
+    // UI描画
+    function renderSidebar() {
+      fileListEl.innerHTML = '';
+      notes.forEach(note => {
+        const li = document.createElement('li');
+        li.className = `file-item ${note.id === activeNoteId ? 'active' : ''}`;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'file-name';
+        nameSpan.textContent = note.title;
+        nameSpan.onclick = () => switchNote(note.id);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(note.id);
+        };
+
+        li.appendChild(nameSpan);
+        if (notes.length > 1) li.appendChild(delBtn);
+        fileListEl.appendChild(li);
+      });
+    }
+
+    function loadActiveNote() {
+      const activeNote = notes.find(n => n.id === activeNoteId) || notes[0];
+      activeNoteId = activeNote.id;
+      editor.value = activeNote.content;
+      currentTabTitle.textContent = activeNote.title;
+      windowTitle.textContent = `workspace -- ${activeNote.title}`;
+      renderSidebar();
+    }
+
+    // ノート切り替え
+    function switchNote(id) {
+      activeNoteId = id;
+      localStorage.setItem(ACTIVE_KEY, activeNoteId);
+      loadActiveNote();
+    }
+
+    // ノート作成
+    newNoteBtn.addEventListener('click', () => {
+      const fileName = prompt('ファイル名を入力してください:', 'note-' + (notes.length + 1) + '.md');
+      if (!fileName) return;
+
+      const newNote = {
+        id: Date.now().toString(),
+        title: fileName.endsWith('.md') || fileName.endsWith('.txt') ? fileName : fileName + '.md',
+        content: ''
+      };
+
+      notes.push(newNote);
+      activeNoteId = newNote.id;
+      saveAll();
+      loadActiveNote();
+    });
+
+    // ノート削除
+    function deleteNote(id) {
+      if (!confirm('このメモを削除しますか？')) return;
+      notes = notes.filter(n => n.id !== id);
+      if (activeNoteId === id) {
+        activeNoteId = notes[0].id;
+      }
+      saveAll();
+      loadActiveNote();
+    }
+
+    // 保存処理
+    function saveAll() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+      localStorage.setItem(ACTIVE_KEY, activeNoteId);
+    }
+
+    // 自動保存（タイピング遅延判定）
+    let saveTimeout = null;
+    editor.addEventListener('input', () => {
+      status.textContent = 'SAVING...';
+      status.className = 'status-indicator saving';
+
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        const activeNote = notes.find(n => n.id === activeNoteId);
+        if (activeNote) {
+          activeNote.content = editor.value;
+          saveAll();
+        }
+        status.textContent = 'SAVED';
+        status.className = 'status-indicator saved';
+      }, 400);
+    });
+
+    // 初期起動
+    loadActiveNote();
+  </script>
+</body>
+</html>
