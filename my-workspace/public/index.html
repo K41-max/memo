@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Style Workspace</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0d1117, #161b22);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+      color: #c9d1d9;
+    }
+
+    .mac-window {
+      width: 94%;
+      max-width: 1120px;
+      height: 88vh;
+      background-color: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ヘッダー */
+    .mac-header {
+      background-color: #161b22;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #30363d;
+      user-select: none;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .mac-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .mac-btn {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .close { background-color: #ff5f56; }
+    .minimize { background-color: #ffbd2e; }
+    .maximize { background-color: #27c93f; }
+
+    /* モード切替タブ */
+    .mode-tabs {
+      display: flex;
+      gap: 6px;
+      background-color: #0d1117;
+      padding: 3px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+
+    .mode-tab {
+      background: transparent;
+      border: none;
+      color: #8b949e;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .mode-tab:hover {
+      color: #c9d1d9;
+    }
+
+    .mode-tab.active {
+      background-color: #1f6feb;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .mac-title {
+      color: #8b949e;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-indicator {
+      font-size: 11px;
+      color: #484f58;
+    }
+    .status-indicator.saved { color: #3fb950; }
+    .status-indicator.saving { color: #d29922; }
+    .status-indicator.error { color: #f85149; }
+
+    /* メインコンテンツ */
+    .window-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ========================
+       メモ画面（既存UI）
+       ======================== */
+    .sidebar {
+      width: 270px;
+      background-color: #010409;
+      border-right: 1px solid #30363d;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: bold;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .add-btn {
+      background: transparent;
+      border: 1px solid #30363d;
+      color: #58a6ff;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+
+    .add-btn:hover {
+      background-color: #1f6feb;
+      color: #fff;
+      border-color: #1f6feb;
+    }
+
+    .file-list {
+      list-style: none;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .file-item {
+      padding: 8px 12px 8px 16px;
+      font-size: 13px;
+      color: #c9d1d9;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 2px solid transparent;
+      transition: 0.1s;
+    }
+
+    .file-item:hover { background-color: #161b22; }
+
+    .file-item.active {
+      background-color: #161b22;
+      border-left-color: #58a6ff;
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    .file-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      margin-right: 8px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.1s ease;
+    }
+
+    .file-item:hover .file-actions { opacity: 1; }
+
+    .action-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+    .rename-btn { color: #8b949e; }
+    .rename-btn:hover { color: #58a6ff; background-color: #21262d; }
+    .delete-btn { color: #f85149; }
+    .delete-btn:hover { background-color: #21262d; }
+
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #0d1117;
+    }
+
+    .editor-tab {
+      background-color: #161b22;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #8b949e;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .tab-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-info::before { content: "📝"; font-size: 10px; }
+
+    .last-edited {
+      font-size: 11px;
+      color: #484f58;
+    }
+
+    textarea#editor {
+      flex: 1;
+      background-color: transparent;
+      color: #58a6ff;
+      border: none;
+      padding: 20px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      outline: none;
+      caret-color: #58a6ff;
+    }
+
+    /* ========================
+       カレンダー画面
+       ======================== */
+    .calendar-view {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .calendar-main {
+      flex: 1.4;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #30363d;
+      overflow-y: auto;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .calendar-month-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #e6edf3;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-btn {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 4px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+
+    .nav-btn:hover {
+      border-color: #58a6ff;
+      color: #58a6ff;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 11px;
+      color: #8b949e;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+      flex: 1;
+    }
+
+    .cal-day {
+      background-color: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      padding: 6px;
+      min-height: 68px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: 0.15s;
+    }
+
+    .cal-day:hover {
+      border-color: #58a6ff;
+    }
+
+    .cal-day.other-month {
+      opacity: 0.35;
+    }
+
+    .cal-day.today {
+      border-color: #3fb950;
+    }
+
+    .cal-day.selected {
+      background-color: #1c2430;
+      border-color: #58a6ff;
+      box-shadow: inset 0 0 0 1px #58a6ff;
+    }
+
+    .cal-day-num {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .cal-day.sun .cal-day-num { color: #f85149; }
+    .cal-day.sat .cal-day-num { color: #58a6ff; }
+
+    .cal-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+    }
+
+    .cal-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: #58a6ff;
+    }
+
+    .cal-event-preview {
+      font-size: 10px;
+      color: #8b949e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* 右：選択日の予定パネル */
+    .day-panel {
+      flex: 1;
+      background-color: #010409;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .day-panel-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #58a6ff;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #21262d;
+    }
+
+    .event-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+      background-color: #0d1117;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+    }
+
+    .event-form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .event-input {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .event-input:focus {
+      border-color: #58a6ff;
+    }
+
+    .event-input-time { width: 100px; }
+    .event-input-title { flex: 1; }
+
+    .event-submit-btn {
+      background-color: #238636;
+      border: none;
+      color: #fff;
+      padding: 7px;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .event-submit-btn:hover { background-color: #2ea043; }
+
+    .event-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .event-card {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-left: 3px solid #58a6ff;
+      border-radius: 6px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .event-info { flex: 1; }
+    .event-time {
+      font-size: 11px;
+      color: #3fb950;
+      margin-bottom: 2px;
+    }
+    .event-title {
+      font-size: 13px;
+      font-weight: bold;
+      color: #e6edf3;
+    }
+    .event-desc {
+      font-size: 11px;
+      color: #8b949e;
+      margin-top: 4px;
+      white-space: pre-wrap;
+    }
+
+    .empty-events {
+      color: #484f58;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #8b949e; }
+  </style>
+</head>
+<body>
+
+  <div class="mac-window">
+    <!-- ヘッダー -->
+    <div class="mac-header">
+      <div class="header-left">
+        <div class="mac-buttons">
+          <span class="mac-btn close"></span>
+          <span class="mac-btn minimize"></span>
+          <span class="mac-btn maximize"></span>
+        </div>
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="tab-notes">📝 Notes</button>
+          <button class="mode-tab" id="tab-calendar">📅 Calendar</button>
+        </div>
+      </div>
+
+      <div class="mac-title" id="window-title">workspace -- notes</div>
+      <div id="status" class="status-indicator">READY</div>
+    </div>
+
+    <!-- Notes ビュー -->
+    <div class="window-body" id="notes-view">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <span>Files</span>
+          <button class="add-btn" id="new-note-btn">+ New</button>
+        </div>
+        <ul class="file-list" id="file-list"></ul>
+      </div>
+
+      <div class="editor-container">
+        <div class="editor-tab">
+          <span class="tab-info" id="current-tab-title">loading...</span>
+          <span class="last-edited" id="last-edited-time">--</span>
+        </div>
+        <textarea id="editor" placeholder="// Type your text here..." spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <!-- Calendar ビュー -->
+    <div class="window-body hidden" id="calendar-view">
+      <div class="calendar-view">
+        <div class="calendar-main">
+          <div class="calendar-header">
+            <div class="calendar-month-title" id="cal-month-title">2025年 1月</div>
+            <div class="calendar-nav">
+              <button class="nav-btn" id="cal-prev">&lt; 前月</button>
+              <button class="nav-btn" id="cal-today">今日</button>
+              <button class="nav-btn" id="cal-next">次月 &gt;</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays">
+            <div style="color:#f85149;">日</div>
+            <div>月</div>
+            <div>火</div>
+            <div>水</div>
+            <div>木</div>
+            <div>金</div>
+            <div style="color:#58a6ff;">土</div>
+          </div>
+          <div class="calendar-grid" id="cal-grid"></div>
+        </div>
+
+        <div class="day-panel">
+          <div class="day-panel-title" id="selected-date-title">2025-01-01 の予定</div>
+          <form class="event-form" id="event-form">
+            <div class="event-form-row">
+              <input type="time" class="event-input event-input-time" id="event-time">
+              <input type="text" class="event-input event-input-title" id="event-title" placeholder="予定のタイトル" required>
+            </div>
+            <input type="text" class="event-input" id="event-desc" placeholder="メモ・詳細（任意）">
+            <button type="submit" class="event-submit-btn">+ 予定を追加</button>
+          </form>
+          <ul class="event-list" id="event-list"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ========================
+    // 共通ステータス＆日時処理
+    // ========================
+    const statusEl = document.getElementById('status');
+    const windowTitle = document.getElementById('window-title');
+
+    function setStatus(text, type) {
+      statusEl.textContent = text;
+      statusEl.className = `status-indicator ${type || ''}`;
+    }
+
+    function formatTimestamp(isoString) {
+      if (!isoString) return '未編集';
+      const d = new Date(isoString);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+
+    function formatDateKey(dateObj) {
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}`;
+    }
+
+    // ========================
+    // モード切り替え
+    // ========================
+    const tabNotes = document.getElementById('tab-notes');
+    const tabCalendar = document.getElementById('tab-calendar');
+    const notesView = document.getElementById('notes-view');
+    const calendarView = document.getElementById('calendar-view');
+
+    tabNotes.addEventListener('click', () => {
+      tabNotes.classList.add('active');
+      tabCalendar.classList.remove('active');
+      notesView.classList.remove('hidden');
+      calendarView.classList.add('hidden');
+      const activeNote = notes.find(n => n.id === activeNoteId);
+      windowTitle.textContent = `workspace -- ${activeNote ? activeNote.title : 'notes'}`;
+    });
+
+    tabCalendar.addEventListener('click', () => {
+      tabCalendar.classList.add('active');
+      tabNotes.classList.remove('active');
+      calendarView.classList.remove('hidden');
+      notesView.classList.add('hidden');
+      windowTitle.textContent = `workspace -- calendar`;
+      renderCalendar();
+    });
+
+    // ========================
+    // Notes ロジック (API連携)
+    // ========================
+    let notes = [];
+    let activeNoteId = localStorage.getItem('active_note_id') || null;
+
+    const fileListEl = document.getElementById('file-list');
+    const editor = document.getElementById('editor');
+    const currentTabTitle = document.getElementById('current-tab-title');
+    const lastEditedTimeEl = document.getElementById('last-edited-time');
+    const newNoteBtn = document.getElementById('new-note-btn');
+
+    async function fetchNotes() {
+      setStatus('LOADING...', 'saving');
+      try {
+        const res = await fetch('/api/notes');
+        notes = await res.json();
+        if (notes.length > 0) {
+          if (!activeNoteId || !notes.some(n => n.id === activeNoteId)) {
+            activeNoteId = notes[0].id;
+          }
+          loadActiveNote();
+        }
+        setStatus('READY', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    }
+
+    function renderSidebar() {
+      fileListEl.innerHTML = '';
+      notes.forEach(note => {
+        const li = document.createElement('li');
+        li.className = `file-item ${note.id === activeNoteId ? 'active' : ''}`;
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'file-name';
+        nameSpan.textContent = note.title;
+        nameSpan.onclick = () => switchNote(note.id);
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'file-actions';
+
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'action-btn rename-btn';
+        renameBtn.textContent = '✏️';
+        renameBtn.title = '名前を変更';
+        renameBtn.onclick = (e) => {
+          e.stopPropagation();
+          renameNote(note.id);
+        };
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'action-btn delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.title = '削除';
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteNote(note.id);
+        };
+
+        actionsDiv.appendChild(renameBtn);
+        if (notes.length > 1) actionsDiv.appendChild(delBtn);
+
+        li.appendChild(nameSpan);
+        li.appendChild(actionsDiv);
+        fileListEl.appendChild(li);
+      });
+    }
+
+    function loadActiveNote() {
+      const activeNote = notes.find(n => n.id === activeNoteId) || notes[0];
+      if (!activeNote) return;
+      activeNoteId = activeNote.id;
+      localStorage.setItem('active_note_id', activeNoteId);
+
+      editor.value = activeNote.content;
+      currentTabTitle.textContent = activeNote.title;
+      lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
+      if (!notesView.classList.contains('hidden')) {
+        windowTitle.textContent = `workspace -- ${activeNote.title}`;
+      }
+      renderSidebar();
+    }
+
+    function switchNote(id) {
+      activeNoteId = id;
+      loadActiveNote();
+    }
+
+    newNoteBtn.addEventListener('click', async () => {
+      const fileName = prompt('ファイル名を入力してください:', 'note-' + (notes.length + 1) + '.md');
+      if (!fileName) return;
+
+      const title = fileName.endsWith('.md') || fileName.endsWith('.txt') ? fileName : fileName + '.md';
+      setStatus('SAVING...', 'saving');
+      try {
+        const res = await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Date.now().toString(), title, content: '' })
+        });
+        const newNote = await res.json();
+        notes.push(newNote);
+        activeNoteId = newNote.id;
+        loadActiveNote();
+        setStatus('SAVED', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    });
+
+    async function renameNote(id) {
+      const targetNote = notes.find(n => n.id === id);
+      if (!targetNote) return;
+
+      const newName = prompt('新しいファイル名を入力してください:', targetNote.title);
+      if (!newName || newName.trim() === '') return;
+
+      setStatus('SAVING...', 'saving');
+      try {
+        const res = await fetch(`/api/notes/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: newName.trim() })
+        });
+        const updated = await res.json();
+        targetNote.title = updated.title;
+        targetNote.updatedAt = updated.updatedAt;
+        loadActiveNote();
+        setStatus('SAVED', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    }
+
+    async function deleteNote(id) {
+      if (!confirm('このメモを削除しますか？')) return;
+      setStatus('SAVING...', 'saving');
+      try {
+        await fetch(`/api/notes/${id}`, { method: 'DELETE' });
+        notes = notes.filter(n => n.id !== id);
+        if (activeNoteId === id) {
+          activeNoteId = notes[0].id;
+        }
+        loadActiveNote();
+        setStatus('SAVED', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    }
+
+    let saveTimeout = null;
+    editor.addEventListener('input', () => {
+      setStatus('SAVING...', 'saving');
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(async () => {
+        const activeNote = notes.find(n => n.id === activeNoteId);
+        if (!activeNote) return;
+
+        try {
+          const res = await fetch(`/api/notes/${activeNote.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: editor.value })
+          });
+          const updated = await res.json();
+          activeNote.content = updated.content;
+          activeNote.updatedAt = updated.updatedAt;
+          lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
+          setStatus('SAVED', 'saved');
+        } catch (e) {
+          setStatus('ERROR', 'error');
+        }
+      }, 500);
+    });
+
+    // ========================
+    // Calendar ロジック (API連携)
+    // ========================
+    let events = [];
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth(); // 0-11
+    let selectedDateKey = formatDateKey(new Date());
+
+    const calMonthTitle = document.getElementById('cal-month-title');
+    const calGrid = document.getElementById('cal-grid');
+    const selectedDateTitle = document.getElementById('selected-date-title');
+    const eventListEl = document.getElementById('event-list');
+    const eventForm = document.getElementById('event-form');
+
+    async function fetchEvents() {
+      try {
+        const res = await fetch('/api/events');
+        events = await res.json();
+        renderCalendar();
+        renderDayEvents();
+      } catch (e) {
+        console.error('予定取得エラー', e);
+      }
+    }
+
+    function renderCalendar() {
+      calMonthTitle.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+      calGrid.innerHTML = '';
+
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      const startDayOfWeek = firstDay.getDay(); // 0(日) - 6(土)
+      const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+      const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
+      const todayKey = formatDateKey(new Date());
+
+      // 前月分の穴埋め
+      for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const dayNum = prevMonthDays - i;
+        const cellDate = new Date(currentYear, currentMonth - 1, dayNum);
+        calGrid.appendChild(createDayCell(cellDate, true, todayKey));
+      }
+
+      // 当月分
+      for (let d = 1; d <= daysInMonth; d++) {
+        const cellDate = new Date(currentYear, currentMonth, d);
+        calGrid.appendChild(createDayCell(cellDate, false, todayKey));
+      }
+
+      // 次月分の穴埋め（42マス＝6週分に揃える）
+      const totalCells = calGrid.children.length;
+      const remaining = 42 - totalCells;
+      for (let d = 1; d <= remaining; d++) {
+        const cellDate = new Date(currentYear, currentMonth + 1, d);
+        calGrid.appendChild(createDayCell(cellDate, true, todayKey));
+      }
+    }
+
+    function createDayCell(dateObj, isOtherMonth, todayKey) {
+      const dateKey = formatDateKey(dateObj);
+      const dayOfWeek = dateObj.getDay();
+
+      const cell = document.createElement('div');
+      cell.className = 'cal-day';
+      if (isOtherMonth) cell.classList.add('other-month');
+      if (dateKey === todayKey) cell.classList.add('today');
+      if (dateKey === selectedDateKey) cell.classList.add('selected');
+      if (dayOfWeek === 0) cell.classList.add('sun');
+      if (dayOfWeek === 6) cell.classList.add('sat');
+
+      const numEl = document.createElement('div');
+      numEl.className = 'cal-day-num';
+      numEl.textContent = dateObj.getDate();
+      cell.appendChild(numEl);
+
+      // その日の予定
+      const dayEvents = events.filter(ev => ev.date === dateKey);
+      if (dayEvents.length > 0) {
+        const preview = document.createElement('div');
+        preview.className = 'cal-event-preview';
+        preview.textContent = dayEvents[0].title;
+        cell.appendChild(preview);
+
+        const dots = document.createElement('div');
+        dots.className = 'cal-dots';
+        dayEvents.slice(0, 5).forEach(() => {
+          const dot = document.createElement('span');
+          dot.className = 'cal-dot';
+          dots.appendChild(dot);
+        });
+        cell.appendChild(dots);
+      }
+
+      cell.onclick = () => {
+        selectedDateKey = dateKey;
+        if (isOtherMonth) {
+          currentYear = dateObj.getFullYear();
+          currentMonth = dateObj.getMonth();
+        }
+        renderCalendar();
+        renderDayEvents();
+      };
+
+      return cell;
+    }
+
+    function renderDayEvents() {
+      selectedDateTitle.textContent = `📅 ${selectedDateKey} の予定`;
+      eventListEl.innerHTML = '';
+
+      const dayEvents = events.filter(ev => ev.date === selectedDateKey);
+      if (dayEvents.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'empty-events';
+        empty.textContent = '// この日の予定はありません';
+        eventListEl.appendChild(empty);
+        return;
+      }
+
+      dayEvents.forEach(ev => {
+        const li = document.createElement('li');
+        li.className = 'event-card';
+
+        const info = document.createElement('div');
+        info.className = 'event-info';
+
+        if (ev.time) {
+          const timeEl = document.createElement('div');
+          timeEl.className = 'event-time';
+          timeEl.textContent = `⏰ ${ev.time}`;
+          info.appendChild(timeEl);
+        }
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'event-title';
+        titleEl.textContent = ev.title;
+        info.appendChild(titleEl);
+
+        if (ev.description) {
+          const descEl = document.createElement('div');
+          descEl.className = 'event-desc';
+          descEl.textContent = ev.description;
+          info.appendChild(descEl);
+        }
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'action-btn delete-btn';
+        delBtn.textContent = '✕';
+        delBtn.title = '削除';
+        delBtn.onclick = () => deleteEvent(ev.id);
+
+        li.appendChild(info);
+        li.appendChild(delBtn);
+        eventListEl.appendChild(li);
+      });
+    }
+
+    eventForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const time = document.getElementById('event-time').value;
+      const title = document.getElementById('event-title').value.trim();
+      const description = document.getElementById('event-desc').value.trim();
+      if (!title) return;
+
+      setStatus('SAVING...', 'saving');
+      try {
+        const res = await fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: Date.now().toString(),
+            date: selectedDateKey,
+            time,
+            title,
+            description
+          })
+        });
+        const newEvent = await res.json();
+        events.push(newEvent);
+        document.getElementById('event-time').value = '';
+        document.getElementById('event-title').value = '';
+        document.getElementById('event-desc').value = '';
+        renderCalendar();
+        renderDayEvents();
+        setStatus('SAVED', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    });
+
+    async function deleteEvent(id) {
+      if (!confirm('この予定を削除しますか？')) return;
+      setStatus('SAVING...', 'saving');
+      try {
+        await fetch(`/api/events/${id}`, { method: 'DELETE' });
+        events = events.filter(ev => ev.id !== id);
+        renderCalendar();
+        renderDayEvents();
+        setStatus('SAVED', 'saved');
+      } catch (e) {
+        setStatus('ERROR', 'error');
+      }
+    }
+
+    document.getElementById('cal-prev').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      renderCalendar();
+    });
+
+    document.getElementById('cal-next').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      renderCalendar();
+    });
+
+    document.getElementById('cal-today').addEventListener('click', () => {
+      const now = new Date();
+      currentYear = now.getFullYear();
+      currentMonth = now.getMonth();
+      selectedDateKey = formatDateKey(now);
+      renderCalendar();
+      renderDayEvents();
+    });
+
+    // 初期起動
+    fetchNotes();
+    fetchEvents();
+  </script>
+</body>
+</html>
