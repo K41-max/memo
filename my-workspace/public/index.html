@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GitHub Style Workspace</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#161b22">
   <style>
     * {
       box-sizing: border-box;
@@ -65,7 +68,6 @@
     .minimize { background-color: #ffbd2e; }
     .maximize { background-color: #27c93f; }
 
-    /* モード切替タブ */
     .mode-tabs {
       display: flex;
       gap: 6px;
@@ -86,11 +88,7 @@
       cursor: pointer;
       transition: 0.15s;
     }
-
-    .mode-tab:hover {
-      color: #c9d1d9;
-    }
-
+    .mode-tab:hover { color: #c9d1d9; }
     .mode-tab.active {
       background-color: #1f6feb;
       color: #ffffff;
@@ -103,27 +101,46 @@
       font-weight: 600;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .status-indicator {
       font-size: 11px;
       color: #484f58;
     }
     .status-indicator.saved { color: #3fb950; }
     .status-indicator.saving { color: #d29922; }
+    .status-indicator.offline { color: #f0883e; }
     .status-indicator.error { color: #f85149; }
 
-    /* メインコンテンツ */
+    .sync-btn {
+      background: transparent;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .sync-btn:hover {
+      border-color: #58a6ff;
+      color: #58a6ff;
+    }
+
     .window-body {
       display: flex;
       flex: 1;
       overflow: hidden;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
     /* ========================
-       メモ画面（既存UI）
+       メモ画面
        ======================== */
     .sidebar {
       width: 270px;
@@ -158,7 +175,6 @@
       font-family: inherit;
       transition: 0.2s;
     }
-
     .add-btn:hover {
       background-color: #1f6feb;
       color: #fff;
@@ -182,9 +198,7 @@
       border-left: 2px solid transparent;
       transition: 0.1s;
     }
-
     .file-item:hover { background-color: #161b22; }
-
     .file-item.active {
       background-color: #161b22;
       border-left-color: #58a6ff;
@@ -206,7 +220,6 @@
       opacity: 0;
       transition: opacity 0.1s ease;
     }
-
     .file-item:hover .file-actions { opacity: 1; }
 
     .action-btn {
@@ -312,7 +325,6 @@
       font-family: inherit;
       font-size: 12px;
     }
-
     .nav-btn:hover {
       border-color: #58a6ff;
       color: #58a6ff;
@@ -348,39 +360,20 @@
       justify-content: space-between;
       transition: 0.15s;
     }
-
-    .cal-day:hover {
-      border-color: #58a6ff;
-    }
-
-    .cal-day.other-month {
-      opacity: 0.35;
-    }
-
-    .cal-day.today {
-      border-color: #3fb950;
-    }
-
+    .cal-day:hover { border-color: #58a6ff; }
+    .cal-day.other-month { opacity: 0.35; }
+    .cal-day.today { border-color: #3fb950; }
     .cal-day.selected {
       background-color: #1c2430;
       border-color: #58a6ff;
       box-shadow: inset 0 0 0 1px #58a6ff;
     }
 
-    .cal-day-num {
-      font-size: 12px;
-      font-weight: bold;
-    }
-
+    .cal-day-num { font-size: 12px; font-weight: bold; }
     .cal-day.sun .cal-day-num { color: #f85149; }
     .cal-day.sat .cal-day-num { color: #58a6ff; }
 
-    .cal-dots {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px;
-    }
-
+    .cal-dots { display: flex; flex-wrap: wrap; gap: 3px; }
     .cal-dot {
       width: 6px;
       height: 6px;
@@ -396,7 +389,6 @@
       text-overflow: ellipsis;
     }
 
-    /* 右：選択日の予定パネル */
     .day-panel {
       flex: 1;
       background-color: #010409;
@@ -426,10 +418,7 @@
       border: 1px solid #30363d;
     }
 
-    .event-form-row {
-      display: flex;
-      gap: 8px;
-    }
+    .event-form-row { display: flex; gap: 8px; }
 
     .event-input {
       background-color: #161b22;
@@ -441,11 +430,7 @@
       font-size: 12px;
       outline: none;
     }
-
-    .event-input:focus {
-      border-color: #58a6ff;
-    }
-
+    .event-input:focus { border-color: #58a6ff; }
     .event-input-time { width: 100px; }
     .event-input-title { flex: 1; }
 
@@ -482,29 +467,10 @@
     }
 
     .event-info { flex: 1; }
-    .event-time {
-      font-size: 11px;
-      color: #3fb950;
-      margin-bottom: 2px;
-    }
-    .event-title {
-      font-size: 13px;
-      font-weight: bold;
-      color: #e6edf3;
-    }
-    .event-desc {
-      font-size: 11px;
-      color: #8b949e;
-      margin-top: 4px;
-      white-space: pre-wrap;
-    }
-
-    .empty-events {
-      color: #484f58;
-      font-size: 12px;
-      text-align: center;
-      margin-top: 20px;
-    }
+    .event-time { font-size: 11px; color: #3fb950; margin-bottom: 2px; }
+    .event-title { font-size: 13px; font-weight: bold; color: #e6edf3; }
+    .event-desc { font-size: 11px; color: #8b949e; margin-top: 4px; white-space: pre-wrap; }
+    .empty-events { color: #484f58; font-size: 12px; text-align: center; margin-top: 20px; }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -515,7 +481,6 @@
 <body>
 
   <div class="mac-window">
-    <!-- ヘッダー -->
     <div class="mac-header">
       <div class="header-left">
         <div class="mac-buttons">
@@ -530,7 +495,11 @@
       </div>
 
       <div class="mac-title" id="window-title">workspace -- notes</div>
-      <div id="status" class="status-indicator">READY</div>
+
+      <div class="header-right">
+        <div id="status" class="status-indicator">READY</div>
+        <button class="sync-btn" id="manual-sync-btn" title="サーバーと同期">↻</button>
+      </div>
     </div>
 
     <!-- Notes ビュー -->
@@ -594,8 +563,35 @@
 
   <script>
     // ========================
-    // 共通ステータス＆日時処理
+    // Service Worker 登録（PWA・オフライン起動用）
     // ========================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .catch((err) => console.error('SW登録失敗:', err));
+      });
+    }
+
+    // ========================
+    // ローカルキャッシュ＆同期キュー管理
+    // ========================
+    const CACHE_NOTES_KEY = 'ws_cache_notes_v1';
+    const CACHE_EVENTS_KEY = 'ws_cache_events_v1';
+    const SYNC_QUEUE_KEY = 'ws_sync_queue_v1';
+    const ACTIVE_NOTE_KEY = 'active_note_id';
+
+    let notes = JSON.parse(localStorage.getItem(CACHE_NOTES_KEY) || 'null') || [
+      {
+        id: '1',
+        title: 'welcome.md',
+        content: '// オフライン対応マルチメモ＆カレンダーへようこそ！\n// ネットがない環境でも編集でき、復帰時に自動で同期されます。',
+        updatedAt: new Date().toISOString()
+      }
+    ];
+    let events = JSON.parse(localStorage.getItem(CACHE_EVENTS_KEY) || '[]');
+    let syncQueue = JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]');
+    let isSyncing = false;
+
     const statusEl = document.getElementById('status');
     const windowTitle = document.getElementById('window-title');
 
@@ -604,6 +600,145 @@
       statusEl.className = `status-indicator ${type || ''}`;
     }
 
+    function saveLocalCaches() {
+      localStorage.setItem(CACHE_NOTES_KEY, JSON.stringify(notes));
+      localStorage.setItem(CACHE_EVENTS_KEY, JSON.stringify(events));
+      localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(syncQueue));
+    }
+
+    function updateSyncStatusBadge() {
+      if (!navigator.onLine) {
+        const pending = syncQueue.length > 0 ? ` (未同期:${syncQueue.length})` : '';
+        setStatus(`OFFLINE${pending}`, 'offline');
+      } else if (syncQueue.length > 0) {
+        setStatus(`未同期: ${syncQueue.length}件`, 'saving');
+      } else {
+        setStatus('SYNCED', 'saved');
+      }
+    }
+
+    // キューに操作を追加
+    function enqueueAction(action) {
+      // 同じノートの連続した内容更新は1つにまとめて効率化
+      if (action.type === 'UPDATE_NOTE_CONTENT' && syncQueue.length > 0) {
+        const last = syncQueue[syncQueue.length - 1];
+        if (last.type === 'UPDATE_NOTE_CONTENT' && last.id === action.id) {
+          last.payload = action.payload;
+          saveLocalCaches();
+          processSyncQueue();
+          return;
+        }
+      }
+      syncQueue.push(action);
+      saveLocalCaches();
+      processSyncQueue();
+    }
+
+    // キューを順番にサーバーへ送信
+    async function processSyncQueue() {
+      if (isSyncing) return;
+      if (!navigator.onLine || syncQueue.length === 0) {
+        updateSyncStatusBadge();
+        return;
+      }
+
+      isSyncing = true;
+      setStatus('SYNCING...', 'saving');
+
+      try {
+        while (syncQueue.length > 0) {
+          if (!navigator.onLine) break;
+          const action = syncQueue[0];
+          let res;
+
+          if (action.type === 'CREATE_NOTE') {
+            res = await fetch('/api/notes', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(action.payload)
+            });
+          } else if (action.type === 'UPDATE_NOTE_CONTENT' || action.type === 'RENAME_NOTE') {
+            res = await fetch(`/api/notes/${action.id}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(action.payload)
+            });
+          } else if (action.type === 'DELETE_NOTE') {
+            res = await fetch(`/api/notes/${action.id}`, { method: 'DELETE' });
+          } else if (action.type === 'CREATE_EVENT') {
+            res = await fetch('/api/events', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(action.payload)
+            });
+          } else if (action.type === 'DELETE_EVENT') {
+            res = await fetch(`/api/events/${action.id}`, { method: 'DELETE' });
+          }
+
+          if (!res || (!res.ok && res.status >= 500)) {
+            throw new Error('Server unreachable');
+          }
+
+          // 成功したら先頭から削除
+          syncQueue.shift();
+          saveLocalCaches();
+        }
+        updateSyncStatusBadge();
+      } catch (err) {
+        // ネットワークエラー時はキューを残してオフライン表示にする
+        const pending = syncQueue.length > 0 ? ` (未同期:${syncQueue.length})` : '';
+        setStatus(`OFFLINE${pending}`, 'offline');
+      } finally {
+        isSyncing = false;
+      }
+    }
+
+    // サーバーから最新データを取得（未同期キューが空のときだけ上書き）
+    async function syncFromServer() {
+      await processSyncQueue();
+      if (!navigator.onLine || syncQueue.length > 0) {
+        updateSyncStatusBadge();
+        return;
+      }
+
+      try {
+        const [notesRes, eventsRes] = await Promise.all([
+          fetch('/api/notes'),
+          fetch('/api/events')
+        ]);
+        if (!notesRes.ok || !eventsRes.ok) throw new Error('Fetch failed');
+
+        const serverNotes = await notesRes.json();
+        const serverEvents = await eventsRes.json();
+
+        // 通信中にユーザーが操作してキューが積まれていなければ反映
+        if (syncQueue.length === 0) {
+          notes = serverNotes;
+          events = serverEvents;
+          saveLocalCaches();
+          loadActiveNote();
+          renderCalendar();
+          renderDayEvents();
+        }
+        updateSyncStatusBadge();
+      } catch (e) {
+        setStatus('OFFLINE (CACHE)', 'offline');
+      }
+    }
+
+    window.addEventListener('online', () => {
+      syncFromServer();
+    });
+    window.addEventListener('offline', () => {
+      updateSyncStatusBadge();
+    });
+    document.getElementById('manual-sync-btn').addEventListener('click', () => {
+      syncFromServer();
+    });
+
+    // ========================
+    // ユーティリティ＆モード切替
+    // ========================
     function formatTimestamp(isoString) {
       if (!isoString) return '未編集';
       const d = new Date(isoString);
@@ -616,9 +751,6 @@
       return `${dateObj.getFullYear()}-${pad(dateObj.getMonth() + 1)}-${pad(dateObj.getDate())}`;
     }
 
-    // ========================
-    // モード切り替え
-    // ========================
     const tabNotes = document.getElementById('tab-notes');
     const tabCalendar = document.getElementById('tab-calendar');
     const notesView = document.getElementById('notes-view');
@@ -643,33 +775,15 @@
     });
 
     // ========================
-    // Notes ロジック (API連携)
+    // Notes ロジック
     // ========================
-    let notes = [];
-    let activeNoteId = localStorage.getItem('active_note_id') || null;
+    let activeNoteId = localStorage.getItem(ACTIVE_NOTE_KEY) || (notes[0] && notes[0].id);
 
     const fileListEl = document.getElementById('file-list');
     const editor = document.getElementById('editor');
     const currentTabTitle = document.getElementById('current-tab-title');
     const lastEditedTimeEl = document.getElementById('last-edited-time');
     const newNoteBtn = document.getElementById('new-note-btn');
-
-    async function fetchNotes() {
-      setStatus('LOADING...', 'saving');
-      try {
-        const res = await fetch('/api/notes');
-        notes = await res.json();
-        if (notes.length > 0) {
-          if (!activeNoteId || !notes.some(n => n.id === activeNoteId)) {
-            activeNoteId = notes[0].id;
-          }
-          loadActiveNote();
-        }
-        setStatus('READY', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
-      }
-    }
 
     function renderSidebar() {
       fileListEl.innerHTML = '';
@@ -713,10 +827,10 @@
     }
 
     function loadActiveNote() {
+      if (notes.length === 0) return;
       const activeNote = notes.find(n => n.id === activeNoteId) || notes[0];
-      if (!activeNote) return;
       activeNoteId = activeNote.id;
-      localStorage.setItem('active_note_id', activeNoteId);
+      localStorage.setItem(ACTIVE_NOTE_KEY, activeNoteId);
 
       editor.value = activeNote.content;
       currentTabTitle.textContent = activeNote.title;
@@ -732,99 +846,72 @@
       loadActiveNote();
     }
 
-    newNoteBtn.addEventListener('click', async () => {
+    newNoteBtn.addEventListener('click', () => {
       const fileName = prompt('ファイル名を入力してください:', 'note-' + (notes.length + 1) + '.md');
       if (!fileName) return;
 
       const title = fileName.endsWith('.md') || fileName.endsWith('.txt') ? fileName : fileName + '.md';
-      setStatus('SAVING...', 'saving');
-      try {
-        const res = await fetch('/api/notes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: Date.now().toString(), title, content: '' })
-        });
-        const newNote = await res.json();
-        notes.push(newNote);
-        activeNoteId = newNote.id;
-        loadActiveNote();
-        setStatus('SAVED', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
-      }
+      const newNote = {
+        id: Date.now().toString(),
+        title,
+        content: '',
+        updatedAt: new Date().toISOString()
+      };
+
+      notes.push(newNote);
+      activeNoteId = newNote.id;
+      loadActiveNote();
+      enqueueAction({ type: 'CREATE_NOTE', payload: newNote });
     });
 
-    async function renameNote(id) {
+    function renameNote(id) {
       const targetNote = notes.find(n => n.id === id);
       if (!targetNote) return;
 
       const newName = prompt('新しいファイル名を入力してください:', targetNote.title);
       if (!newName || newName.trim() === '') return;
 
-      setStatus('SAVING...', 'saving');
-      try {
-        const res = await fetch(`/api/notes/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: newName.trim() })
-        });
-        const updated = await res.json();
-        targetNote.title = updated.title;
-        targetNote.updatedAt = updated.updatedAt;
-        loadActiveNote();
-        setStatus('SAVED', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
-      }
+      targetNote.title = newName.trim();
+      targetNote.updatedAt = new Date().toISOString();
+      loadActiveNote();
+      enqueueAction({ type: 'RENAME_NOTE', id, payload: { title: targetNote.title } });
     }
 
-    async function deleteNote(id) {
+    function deleteNote(id) {
       if (!confirm('このメモを削除しますか？')) return;
-      setStatus('SAVING...', 'saving');
-      try {
-        await fetch(`/api/notes/${id}`, { method: 'DELETE' });
-        notes = notes.filter(n => n.id !== id);
-        if (activeNoteId === id) {
-          activeNoteId = notes[0].id;
-        }
-        loadActiveNote();
-        setStatus('SAVED', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
+      notes = notes.filter(n => n.id !== id);
+      if (activeNoteId === id) {
+        activeNoteId = notes[0].id;
       }
+      loadActiveNote();
+      enqueueAction({ type: 'DELETE_NOTE', id });
     }
 
     let saveTimeout = null;
     editor.addEventListener('input', () => {
       setStatus('SAVING...', 'saving');
       clearTimeout(saveTimeout);
-      saveTimeout = setTimeout(async () => {
+      saveTimeout = setTimeout(() => {
         const activeNote = notes.find(n => n.id === activeNoteId);
         if (!activeNote) return;
 
-        try {
-          const res = await fetch(`/api/notes/${activeNote.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: editor.value })
-          });
-          const updated = await res.json();
-          activeNote.content = updated.content;
-          activeNote.updatedAt = updated.updatedAt;
-          lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
-          setStatus('SAVED', 'saved');
-        } catch (e) {
-          setStatus('ERROR', 'error');
-        }
-      }, 500);
+        activeNote.content = editor.value;
+        activeNote.updatedAt = new Date().toISOString();
+        lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
+
+        enqueueAction({
+          type: 'UPDATE_NOTE_CONTENT',
+          id: activeNote.id,
+          payload: { content: editor.value }
+        });
+      }, 400);
     });
 
     // ========================
-    // Calendar ロジック (API連携)
+    // Calendar ロジック
     // ========================
-    let events = [];
     let currentYear = new Date().getFullYear();
-    let currentMonth = new Date().getMonth(); // 0-11
+    let currentMonth = new Date().getMonth();
     let selectedDateKey = formatDateKey(new Date());
 
     const calMonthTitle = document.getElementById('cal-month-title');
@@ -833,43 +920,28 @@
     const eventListEl = document.getElementById('event-list');
     const eventForm = document.getElementById('event-form');
 
-    async function fetchEvents() {
-      try {
-        const res = await fetch('/api/events');
-        events = await res.json();
-        renderCalendar();
-        renderDayEvents();
-      } catch (e) {
-        console.error('予定取得エラー', e);
-      }
-    }
-
     function renderCalendar() {
       calMonthTitle.textContent = `${currentYear}年 ${currentMonth + 1}月`;
       calGrid.innerHTML = '';
 
       const firstDay = new Date(currentYear, currentMonth, 1);
-      const startDayOfWeek = firstDay.getDay(); // 0(日) - 6(土)
+      const startDayOfWeek = firstDay.getDay();
       const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
       const prevMonthDays = new Date(currentYear, currentMonth, 0).getDate();
       const todayKey = formatDateKey(new Date());
 
-      // 前月分の穴埋め
       for (let i = startDayOfWeek - 1; i >= 0; i--) {
         const dayNum = prevMonthDays - i;
         const cellDate = new Date(currentYear, currentMonth - 1, dayNum);
         calGrid.appendChild(createDayCell(cellDate, true, todayKey));
       }
 
-      // 当月分
       for (let d = 1; d <= daysInMonth; d++) {
         const cellDate = new Date(currentYear, currentMonth, d);
         calGrid.appendChild(createDayCell(cellDate, false, todayKey));
       }
 
-      // 次月分の穴埋め（42マス＝6週分に揃える）
-      const totalCells = calGrid.children.length;
-      const remaining = 42 - totalCells;
+      const remaining = 42 - calGrid.children.length;
       for (let d = 1; d <= remaining; d++) {
         const cellDate = new Date(currentYear, currentMonth + 1, d);
         calGrid.appendChild(createDayCell(cellDate, true, todayKey));
@@ -893,7 +965,6 @@
       numEl.textContent = dateObj.getDate();
       cell.appendChild(numEl);
 
-      // その日の予定
       const dayEvents = events.filter(ev => ev.date === dateKey);
       if (dayEvents.length > 0) {
         const preview = document.createElement('div');
@@ -928,7 +999,10 @@
       selectedDateTitle.textContent = `📅 ${selectedDateKey} の予定`;
       eventListEl.innerHTML = '';
 
-      const dayEvents = events.filter(ev => ev.date === selectedDateKey);
+      const dayEvents = events
+        .filter(ev => ev.date === selectedDateKey)
+        .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
       if (dayEvents.length === 0) {
         const empty = document.createElement('li');
         empty.className = 'empty-events';
@@ -975,51 +1049,37 @@
       });
     }
 
-    eventForm.addEventListener('submit', async (e) => {
+    eventForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const time = document.getElementById('event-time').value;
       const title = document.getElementById('event-title').value.trim();
       const description = document.getElementById('event-desc').value.trim();
       if (!title) return;
 
-      setStatus('SAVING...', 'saving');
-      try {
-        const res = await fetch('/api/events', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: Date.now().toString(),
-            date: selectedDateKey,
-            time,
-            title,
-            description
-          })
-        });
-        const newEvent = await res.json();
-        events.push(newEvent);
-        document.getElementById('event-time').value = '';
-        document.getElementById('event-title').value = '';
-        document.getElementById('event-desc').value = '';
-        renderCalendar();
-        renderDayEvents();
-        setStatus('SAVED', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
-      }
+      const newEvent = {
+        id: Date.now().toString(),
+        date: selectedDateKey,
+        time,
+        title,
+        description,
+        updatedAt: new Date().toISOString()
+      };
+
+      events.push(newEvent);
+      document.getElementById('event-time').value = '';
+      document.getElementById('event-title').value = '';
+      document.getElementById('event-desc').value = '';
+      renderCalendar();
+      renderDayEvents();
+      enqueueAction({ type: 'CREATE_EVENT', payload: newEvent });
     });
 
-    async function deleteEvent(id) {
+    function deleteEvent(id) {
       if (!confirm('この予定を削除しますか？')) return;
-      setStatus('SAVING...', 'saving');
-      try {
-        await fetch(`/api/events/${id}`, { method: 'DELETE' });
-        events = events.filter(ev => ev.id !== id);
-        renderCalendar();
-        renderDayEvents();
-        setStatus('SAVED', 'saved');
-      } catch (e) {
-        setStatus('ERROR', 'error');
-      }
+      events = events.filter(ev => ev.id !== id);
+      renderCalendar();
+      renderDayEvents();
+      enqueueAction({ type: 'DELETE_EVENT', id });
     }
 
     document.getElementById('cal-prev').addEventListener('click', () => {
@@ -1043,9 +1103,13 @@
       renderDayEvents();
     });
 
-    // 初期起動
-    fetchNotes();
-    fetchEvents();
+    // ========================
+    // 初期起動：まずローカルキャッシュを即描画し、裏でサーバーと同期
+    // ========================
+    loadActiveNote();
+    renderCalendar();
+    renderDayEvents();
+    syncFromServer();
   </script>
 </body>
 </html>
