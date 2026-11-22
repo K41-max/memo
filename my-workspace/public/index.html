@@ -28,13 +28,13 @@
       font-family: var(--mono-font);
       font-variant-ligatures: none;
       font-feature-settings: "liga" 0, "calt" 0;
-      color: #c9d1d9;
+      color: #f0f6fc;
     }
 
     .mac-window {
-      width: 94%;
-      max-width: 1120px;
-      height: 88vh;
+      width: 95%;
+      max-width: 1180px;
+      height: 90vh;
       background-color: #0d1117;
       border: 1px solid #30363d;
       border-radius: 10px;
@@ -95,15 +95,15 @@
       cursor: pointer;
       transition: 0.15s;
     }
-    .mode-tab:hover { color: #c9d1d9; }
+    .mode-tab:hover { color: #f0f6fc; }
     .mode-tab.active {
-      background-color: #1f6feb;
+      background-color: #238636;
       color: #ffffff;
       font-weight: bold;
     }
 
     .mac-title {
-      color: #8b949e;
+      color: #c9d1d9;
       font-size: 12px;
       font-weight: 600;
     }
@@ -116,26 +116,26 @@
 
     .status-indicator {
       font-size: 11px;
-      color: #484f58;
+      color: #8b949e;
     }
-    .status-indicator.saved { color: #3fb950; }
-    .status-indicator.saving { color: #d29922; }
-    .status-indicator.offline { color: #f0883e; }
-    .status-indicator.error { color: #f85149; }
+    .status-indicator.saved { color: #56d364; }
+    .status-indicator.saving { color: #e3b341; }
+    .status-indicator.offline { color: #ffa657; }
+    .status-indicator.error { color: #ff7b72; }
 
     .sync-btn {
       background: transparent;
-      border: 1px solid #30363d;
-      color: #8b949e;
+      border: 1px solid #484f58;
+      color: #f0f6fc;
       border-radius: 4px;
-      padding: 2px 6px;
+      padding: 2px 7px;
       font-size: 11px;
       cursor: pointer;
       font-family: inherit;
     }
     .sync-btn:hover {
-      border-color: #58a6ff;
-      color: #58a6ff;
+      border-color: #f0f6fc;
+      background-color: #21262d;
     }
 
     .window-body {
@@ -162,7 +162,7 @@
       padding: 12px 16px;
       font-size: 11px;
       font-weight: bold;
-      color: #8b949e;
+      color: #c9d1d9;
       text-transform: uppercase;
       letter-spacing: 1px;
       display: flex;
@@ -173,8 +173,8 @@
 
     .add-btn {
       background: transparent;
-      border: 1px solid #30363d;
-      color: #58a6ff;
+      border: 1px solid #484f58;
+      color: #f0f6fc;
       border-radius: 4px;
       padding: 2px 8px;
       font-size: 12px;
@@ -183,9 +183,9 @@
       transition: 0.2s;
     }
     .add-btn:hover {
-      background-color: #1f6feb;
+      background-color: #238636;
       color: #fff;
-      border-color: #1f6feb;
+      border-color: #238636;
     }
 
     .file-list {
@@ -202,14 +202,14 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-left: 2px solid transparent;
+      border-left: 3px solid transparent;
       transition: 0.1s;
     }
     .file-item:hover { background-color: #161b22; }
     .file-item.active {
       background-color: #161b22;
-      border-left-color: #58a6ff;
-      color: #58a6ff;
+      border-left-color: #56d364;
+      color: #ffffff;
       font-weight: bold;
     }
 
@@ -237,9 +237,9 @@
       padding: 2px 4px;
       border-radius: 3px;
     }
-    .rename-btn { color: #8b949e; }
-    .rename-btn:hover { color: #58a6ff; background-color: #21262d; }
-    .delete-btn { color: #f85149; }
+    .rename-btn { color: #c9d1d9; }
+    .rename-btn:hover { color: #ffffff; background-color: #21262d; }
+    .delete-btn { color: #ff7b72; }
     .delete-btn:hover { background-color: #21262d; }
 
     .editor-container {
@@ -252,29 +252,51 @@
 
     .editor-tab {
       background-color: #161b22;
-      padding: 8px 16px;
+      padding: 7px 16px;
       font-size: 12px;
-      color: #8b949e;
+      color: #c9d1d9;
       border-bottom: 1px solid #30363d;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
+    .tab-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .tab-info {
       display: flex;
       align-items: center;
       gap: 6px;
-      color: #e6edf3;
+      color: #f0f6fc;
+      font-weight: bold;
     }
     .tab-info::before { content: "📄"; font-size: 11px; }
 
-    .last-edited {
+    .format-btn {
+      background-color: #21262d;
+      border: 1px solid #484f58;
+      color: #f0f6fc;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: inherit;
       font-size: 11px;
-      color: #6e7681;
+      cursor: pointer;
+    }
+    .format-btn:hover {
+      background-color: #30363d;
+      border-color: #8b949e;
     }
 
-    /* コードエディタ本体（行番号＋シンタックスハイライト＋透明Textarea） */
+    .last-edited {
+      font-size: 11px;
+      color: #8b949e;
+    }
+
+    /* コードエディタ本体 */
     .code-editor-wrapper {
       flex: 1;
       display: flex;
@@ -288,7 +310,7 @@
       padding: 16px 10px 16px 0;
       background-color: #0d1117;
       border-right: 1px solid #21262d;
-      color: #484f58;
+      color: #6e7681;
       font-family: var(--mono-font);
       font-size: 14px;
       line-height: 1.6;
@@ -298,11 +320,9 @@
       flex-shrink: 0;
     }
 
-    .line-num {
-      height: 22.4px; /* 14px * 1.6 */
-    }
+    .line-num { height: 22.4px; }
     .line-num.active-line {
-      color: #c9d1d9;
+      color: #f0f6fc;
       font-weight: bold;
     }
 
@@ -312,7 +332,6 @@
       overflow: hidden;
     }
 
-    /* 背面ハイライト層と前面入力層はフォント・余白・折り返しを1pxも狂わせず完全一致させる */
     .highlight-layer,
     textarea#editor {
       position: absolute;
@@ -336,7 +355,7 @@
 
     .highlight-layer {
       pointer-events: none;
-      color: #c9d1d9;
+      color: #f0f6fc;
       background-color: transparent;
       z-index: 1;
     }
@@ -344,33 +363,35 @@
     textarea#editor {
       background-color: transparent;
       color: transparent;
-      caret-color: #58a6ff;
+      caret-color: #f0f6fc;
       resize: none;
       outline: none;
       z-index: 2;
     }
 
     textarea#editor::selection {
-      background: rgba(56, 139, 253, 0.35);
+      background: rgba(86, 211, 100, 0.25);
     }
 
-    /* シンタックスハイライト色（文字幅を変えないため太字/斜体は使わない） */
+    /* 高コントラスト・JSON/コード向けシンタックスハイライト（暗い青を使わず視認性重視） */
     .tok-comment { color: #8b949e; }
-    .tok-heading { color: #79c0ff; }
-    .tok-code    { color: #a5d6ff; background-color: rgba(110, 118, 129, 0.2); border-radius: 3px; }
-    .tok-string  { color: #a5d6ff; }
-    .tok-todo    { color: #0d1117; background-color: #d29922; border-radius: 2px; }
+    .tok-heading { color: #ffd866; }
+    .tok-jsonkey { color: #7ee787; }
+    .tok-string  { color: #ffa657; }
+    .tok-code    { color: #ffd866; background-color: rgba(110, 118, 129, 0.25); border-radius: 3px; }
+    .tok-todo    { color: #0d1117; background-color: #e3b341; border-radius: 2px; }
     .tok-keyword { color: #ff7b72; }
-    .tok-number  { color: #79c0ff; }
-    .tok-bullet  { color: #3fb950; }
+    .tok-number  { color: #d2a8ff; }
+    .tok-brace   { color: #ffd866; }
+    .tok-bullet  { color: #56d364; }
 
-    /* 下部VS Code風ステータスバー */
+    /* 下部ステータスバー */
     .ide-statusbar {
       background-color: #161b22;
       border-top: 1px solid #30363d;
       padding: 4px 14px;
       font-size: 11px;
-      color: #8b949e;
+      color: #c9d1d9;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -387,7 +408,9 @@
       align-items: center;
       gap: 4px;
     }
-    .ide-branch { color: #58a6ff; }
+    .ide-branch { color: #56d364; }
+    .json-valid { color: #56d364; }
+    .json-invalid { color: #ff7b72; }
 
     /* ========================
        カレンダー画面
@@ -399,7 +422,7 @@
     }
 
     .calendar-main {
-      flex: 1.4;
+      flex: 1.2;
       padding: 20px;
       display: flex;
       flex-direction: column;
@@ -417,7 +440,7 @@
     .calendar-month-title {
       font-size: 18px;
       font-weight: bold;
-      color: #e6edf3;
+      color: #f0f6fc;
     }
 
     .calendar-nav {
@@ -427,8 +450,8 @@
 
     .nav-btn {
       background-color: #161b22;
-      border: 1px solid #30363d;
-      color: #c9d1d9;
+      border: 1px solid #484f58;
+      color: #f0f6fc;
       padding: 4px 10px;
       border-radius: 5px;
       cursor: pointer;
@@ -436,8 +459,8 @@
       font-size: 12px;
     }
     .nav-btn:hover {
-      border-color: #58a6ff;
-      color: #58a6ff;
+      border-color: #f0f6fc;
+      background-color: #21262d;
     }
 
     .calendar-weekdays {
@@ -445,7 +468,7 @@
       grid-template-columns: repeat(7, 1fr);
       text-align: center;
       font-size: 11px;
-      color: #8b949e;
+      color: #c9d1d9;
       padding-bottom: 8px;
       border-bottom: 1px solid #21262d;
     }
@@ -460,7 +483,7 @@
 
     .cal-day {
       background-color: #161b22;
-      border: 1px solid #21262d;
+      border: 1px solid #30363d;
       border-radius: 6px;
       padding: 6px;
       min-height: 68px;
@@ -470,37 +493,38 @@
       justify-content: space-between;
       transition: 0.15s;
     }
-    .cal-day:hover { border-color: #58a6ff; }
+    .cal-day:hover { border-color: #8b949e; }
     .cal-day.other-month { opacity: 0.35; }
-    .cal-day.today { border-color: #3fb950; }
+    .cal-day.today { border-color: #56d364; }
     .cal-day.selected {
-      background-color: #1c2430;
-      border-color: #58a6ff;
-      box-shadow: inset 0 0 0 1px #58a6ff;
+      background-color: #21262d;
+      border-color: #f0f6fc;
+      box-shadow: inset 0 0 0 1px #f0f6fc;
     }
 
-    .cal-day-num { font-size: 12px; font-weight: bold; }
-    .cal-day.sun .cal-day-num { color: #f85149; }
-    .cal-day.sat .cal-day-num { color: #58a6ff; }
+    .cal-day-num { font-size: 12px; font-weight: bold; color: #f0f6fc; }
+    .cal-day.sun .cal-day-num { color: #ff7b72; }
+    .cal-day.sat .cal-day-num { color: #7ee787; }
 
     .cal-dots { display: flex; flex-wrap: wrap; gap: 3px; }
     .cal-dot {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background-color: #58a6ff;
+      background-color: #ffa657;
     }
 
     .cal-event-preview {
       font-size: 10px;
-      color: #8b949e;
+      color: #c9d1d9;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
+    /* 右：選択日の予定＆広めのメモパネル */
     .day-panel {
-      flex: 1;
+      flex: 1.1;
       background-color: #010409;
       display: flex;
       flex-direction: column;
@@ -511,20 +535,20 @@
     .day-panel-title {
       font-size: 15px;
       font-weight: bold;
-      color: #58a6ff;
+      color: #f0f6fc;
       margin-bottom: 14px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #21262d;
+      border-bottom: 1px solid #30363d;
     }
 
     .event-form {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       margin-bottom: 20px;
       background-color: #0d1117;
-      padding: 12px;
-      border-radius: 6px;
+      padding: 14px;
+      border-radius: 8px;
       border: 1px solid #30363d;
     }
 
@@ -533,25 +557,34 @@
     .event-input {
       background-color: #161b22;
       border: 1px solid #30363d;
-      color: #c9d1d9;
-      padding: 6px 10px;
+      color: #f0f6fc;
+      padding: 8px 10px;
       border-radius: 4px;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 13px;
       outline: none;
     }
-    .event-input:focus { border-color: #58a6ff; }
-    .event-input-time { width: 100px; }
+    .event-input::placeholder { color: #6e7681; }
+    .event-input:focus { border-color: #8b949e; }
+    .event-input-time { width: 110px; }
     .event-input-title { flex: 1; }
+
+    /* 日付メモ欄（複数行で大きく） */
+    .event-textarea {
+      width: 100%;
+      min-height: 125px;
+      line-height: 1.6;
+      resize: vertical;
+    }
 
     .event-submit-btn {
       background-color: #238636;
       border: none;
       color: #fff;
-      padding: 7px;
-      border-radius: 4px;
+      padding: 9px;
+      border-radius: 5px;
       font-family: inherit;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -561,15 +594,15 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .event-card {
       background-color: #161b22;
       border: 1px solid #30363d;
-      border-left: 3px solid #58a6ff;
+      border-left: 3px solid #56d364;
       border-radius: 6px;
-      padding: 10px 12px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -577,10 +610,16 @@
     }
 
     .event-info { flex: 1; }
-    .event-time { font-size: 11px; color: #3fb950; margin-bottom: 2px; }
-    .event-title { font-size: 13px; font-weight: bold; color: #e6edf3; }
-    .event-desc { font-size: 11px; color: #8b949e; margin-top: 4px; white-space: pre-wrap; }
-    .empty-events { color: #484f58; font-size: 12px; text-align: center; margin-top: 20px; }
+    .event-time { font-size: 11px; color: #56d364; margin-bottom: 3px; }
+    .event-title { font-size: 13px; font-weight: bold; color: #f0f6fc; }
+    .event-desc {
+      font-size: 12px;
+      color: #d0d7de;
+      margin-top: 6px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    .empty-events { color: #6e7681; font-size: 12px; text-align: center; margin-top: 20px; }
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -624,7 +663,10 @@
 
       <div class="editor-container">
         <div class="editor-tab">
-          <span class="tab-info" id="current-tab-title">loading...</span>
+          <div class="tab-left">
+            <span class="tab-info" id="current-tab-title">loading...</span>
+            <button class="format-btn" id="format-json-btn" title="JSONを自動整形">{ } Format JSON</button>
+          </div>
           <span class="last-edited" id="last-edited-time">--</span>
         </div>
 
@@ -632,7 +674,7 @@
           <div class="line-numbers" id="line-numbers"></div>
           <div class="editor-stage">
             <pre class="highlight-layer" id="highlight-layer" aria-hidden="true"></pre>
-            <textarea id="editor" placeholder="// Type your code or notes here..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+            <textarea id="editor" placeholder="// JSONやコード、メモを入力してください..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
           </div>
         </div>
 
@@ -641,6 +683,7 @@
             <span class="ide-status-item ide-branch">⎇ main</span>
             <span class="ide-status-item" id="sb-lines">0 lines</span>
             <span class="ide-status-item" id="sb-chars">0 chars</span>
+            <span class="ide-status-item" id="sb-json-status"></span>
           </div>
           <div class="ide-status-group">
             <span class="ide-status-item" id="sb-cursor">Ln 1, Col 1</span>
@@ -665,13 +708,13 @@
             </div>
           </div>
           <div class="calendar-weekdays">
-            <div style="color:#f85149;">日</div>
+            <div style="color:#ff7b72;">日</div>
             <div>月</div>
             <div>火</div>
             <div>水</div>
             <div>木</div>
             <div>金</div>
-            <div style="color:#58a6ff;">土</div>
+            <div style="color:#7ee787;">土</div>
           </div>
           <div class="calendar-grid" id="cal-grid"></div>
         </div>
@@ -681,10 +724,10 @@
           <form class="event-form" id="event-form">
             <div class="event-form-row">
               <input type="time" class="event-input event-input-time" id="event-time">
-              <input type="text" class="event-input event-input-title" id="event-title" placeholder="予定のタイトル" required>
+              <input type="text" class="event-input event-input-title" id="event-title" placeholder="タイトル（空欄でも追加できます）">
             </div>
-            <input type="text" class="event-input" id="event-desc" placeholder="メモ・詳細（任意）">
-            <button type="submit" class="event-submit-btn">+ 予定を追加</button>
+            <textarea class="event-input event-textarea" id="event-desc" placeholder="日付のメモ・詳細（複数行たっぷり書けます）"></textarea>
+            <button type="submit" class="event-submit-btn">+ 予定・メモを追加</button>
           </form>
           <ul class="event-list" id="event-list"></ul>
         </div>
@@ -714,8 +757,8 @@
     let notes = JSON.parse(localStorage.getItem(CACHE_NOTES_KEY) || 'null') || [
       {
         id: '1',
-        title: 'welcome.md',
-        content: '# GitHub Style Workspace\n\n// 等幅フォント & プログラミングエディタ風モード\nconst status = "READY";\n\n- Tabキーでインデント (Spaces: 2)\n- Enterキーで自動インデント\n- 括弧の自動補完 () {} [] ""\n\nTODO: 自由にメモやコードを書いてみよう！',
+        title: 'welcome.json',
+        content: '{\n  "workspace": "GitHub Style",\n  "features": [\n    "JSONスマートインデント",\n    "等幅フォント",\n    "オフライン同期"\n  ],\n  "ready": true\n}',
         updatedAt: new Date().toISOString()
       }
     ];
@@ -893,7 +936,7 @@
     });
 
     // ========================
-    // IDE風エディタ（シンタックスハイライト・行番号・自動補完）
+    // JSON/IDE風エディタ
     // ========================
     const editor = document.getElementById('editor');
     const highlightLayer = document.getElementById('highlight-layer');
@@ -902,6 +945,8 @@
     const sbChars = document.getElementById('sb-chars');
     const sbCursor = document.getElementById('sb-cursor');
     const sbLang = document.getElementById('sb-lang');
+    const sbJsonStatus = document.getElementById('sb-json-status');
+    const formatJsonBtn = document.getElementById('format-json-btn');
 
     function highlightSyntax(text) {
       const safeText = text.endsWith('\n') ? text + ' ' : text;
@@ -910,16 +955,19 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      const tokenRegex = /(\/\/.*$|\/\*[\s\S]*?\*\/)|(^#{1,6}\s.*$)|(`[^`\n]*`)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b(?:TODO|FIXME|NOTE|BUG)\b)|(\b(?:const|let|var|function|return|if|else|for|while|switch|case|break|import|export|from|async|await|try|catch|class|new|true|false|null|undefined|def|print|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE)\b)|(\b\d+(?:\.\d+)?\b)|(^\s*[-*]\s(?:\[[ xX]\]\s)?)/gm;
+      // JSONのキー("key":)、文字列値、コメント、括弧、キーワード、数値を色分け
+      const tokenRegex = /(\/\/.*$|\/\*[\s\S]*?\*\/)|(^#{1,6}\s.*$)|(`[^`\n]*`)|("(?:\\.|[^"\\])*"(?=\s*:))|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b(?:TODO|FIXME|NOTE|BUG)\b)|(\b(?:const|let|var|function|return|if|else|for|while|switch|case|break|import|export|from|async|await|try|catch|class|new|true|false|null|undefined|def|print|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE)\b)|(-?\b\d+(?:\.\d+)?\b)|([{}[\]])|(^\s*[-*]\s(?:\[[ xX]\]\s)?)/gm;
 
-      return escaped.replace(tokenRegex, (match, comment, heading, code, str, todo, keyword, num, bullet) => {
+      return escaped.replace(tokenRegex, (match, comment, heading, code, jsonKey, str, todo, keyword, num, brace, bullet) => {
         if (comment) return `<span class="tok-comment">${comment}</span>`;
         if (heading) return `<span class="tok-heading">${heading}</span>`;
         if (code)    return `<span class="tok-code">${code}</span>`;
+        if (jsonKey) return `<span class="tok-jsonkey">${jsonKey}</span>`;
         if (str)     return `<span class="tok-string">${str}</span>`;
         if (todo)    return `<span class="tok-todo">${todo}</span>`;
         if (keyword) return `<span class="tok-keyword">${keyword}</span>`;
         if (num)     return `<span class="tok-number">${num}</span>`;
+        if (brace)   return `<span class="tok-brace">${brace}</span>`;
         if (bullet)  return `<span class="tok-bullet">${bullet}</span>`;
         return match;
       });
@@ -935,15 +983,40 @@
       };
     }
 
+    function updateJsonValidationBadge(val) {
+      const activeNote = notes.find(n => n.id === activeNoteId);
+      const isJsonFile = activeNote && activeNote.title.endsWith('.json');
+      const trimmed = val.trim();
+      const looksLikeJson = trimmed.startsWith('{') || trimmed.startsWith('[');
+
+      if (!isJsonFile && !looksLikeJson) {
+        sbJsonStatus.textContent = '';
+        sbJsonStatus.className = 'ide-status-item';
+        return;
+      }
+
+      if (trimmed === '') {
+        sbJsonStatus.textContent = '';
+        return;
+      }
+
+      try {
+        JSON.parse(val);
+        sbJsonStatus.textContent = '✓ Valid JSON';
+        sbJsonStatus.className = 'ide-status-item json-valid';
+      } catch (err) {
+        sbJsonStatus.textContent = '⚠ JSON Syntax Error';
+        sbJsonStatus.className = 'ide-status-item json-invalid';
+      }
+    }
+
     function updateEditorUI() {
       const val = editor.value;
       const totalLines = val.split('\n').length;
       const cursor = getCursorPosition();
 
-      // ハイライト更新
       highlightLayer.innerHTML = highlightSyntax(val);
 
-      // 行番号更新
       let linesHtml = '';
       for (let i = 1; i <= totalLines; i++) {
         const cls = i === cursor.line ? 'line-num active-line' : 'line-num';
@@ -951,25 +1024,35 @@
       }
       lineNumbersEl.innerHTML = linesHtml;
 
-      // ステータスバー更新
       sbLines.textContent = `${totalLines} lines`;
       sbChars.textContent = `${val.length} chars`;
       sbCursor.textContent = `Ln ${cursor.line}, Col ${cursor.col}`;
+      updateJsonValidationBadge(val);
     }
 
-    // スクロール完全同期
+    // JSON整形ボタン
+    formatJsonBtn.addEventListener('click', () => {
+      try {
+        const parsed = JSON.parse(editor.value);
+        editor.value = JSON.stringify(parsed, null, 2);
+        editor.dispatchEvent(new Event('input'));
+      } catch (err) {
+        alert('JSONの構文にエラーがあるため整形できません:\n' + err.message);
+      }
+    });
+
     editor.addEventListener('scroll', () => {
       highlightLayer.scrollTop = editor.scrollTop;
       highlightLayer.scrollLeft = editor.scrollLeft;
       lineNumbersEl.scrollTop = editor.scrollTop;
     });
 
-    // カーソル移動で行番号ハイライトとステータスバーを更新
     editor.addEventListener('click', updateEditorUI);
     editor.addEventListener('keyup', updateEditorUI);
 
-    // プログラミングエディタ風キー操作（Tab・Enterインデント・括弧自動補完）
+    // JSON / IDE風スマートタイピング
     const PAIRS = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'", '`': '`' };
+    const CLOSING_CHARS = new Set([')', '}', ']', '"', "'", '`']);
 
     editor.addEventListener('keydown', (e) => {
       const start = editor.selectionStart;
@@ -993,12 +1076,37 @@
         return;
       }
 
-      // Enter で現在行のインデントを引き継ぐ
+      // Enter：JSONの {|} / [|] 内でのスマート改行＆通常インデント引き継ぎ
       if (e.key === 'Enter') {
         const lineStart = val.lastIndexOf('\n', start - 1) + 1;
         const currentLine = val.slice(lineStart, start);
         const indentMatch = currentLine.match(/^\s*/);
         const indent = indentMatch ? indentMatch[0] : '';
+
+        const prevChar = val[start - 1];
+        const nextChar = val[start];
+
+        // 例: {|} や [|] の中でEnterしたとき、真ん中を2スペース深くし、閉じ括弧を次の行へ
+        if ((prevChar === '{' && nextChar === '}') || (prevChar === '[' && nextChar === ']')) {
+          e.preventDefault();
+          const innerIndent = indent + '  ';
+          editor.value = val.slice(0, start) + '\n' + innerIndent + '\n' + indent + val.slice(end);
+          editor.selectionStart = editor.selectionEnd = start + 1 + innerIndent.length;
+          editor.dispatchEvent(new Event('input'));
+          return;
+        }
+
+        // 直前が { や [ で終わっている行なら、次行を自動で+2スペース深くする
+        if (prevChar === '{' || prevChar === '[') {
+          e.preventDefault();
+          const innerIndent = indent + '  ';
+          editor.value = val.slice(0, start) + '\n' + innerIndent + val.slice(end);
+          editor.selectionStart = editor.selectionEnd = start + 1 + innerIndent.length;
+          editor.dispatchEvent(new Event('input'));
+          return;
+        }
+
+        // 通常のインデント引き継ぎ
         if (indent.length > 0) {
           e.preventDefault();
           editor.value = val.slice(0, start) + '\n' + indent + val.slice(end);
@@ -1006,6 +1114,14 @@
           editor.dispatchEvent(new Event('input'));
           return;
         }
+      }
+
+      // 閉じ括弧/クォートの飛び越え（Type-over：次の文字と同じなら上書きせずカーソルだけ進める）
+      if (CLOSING_CHARS.has(e.key) && start === end && val[start] === e.key) {
+        e.preventDefault();
+        editor.selectionStart = editor.selectionEnd = start + 1;
+        updateEditorUI();
+        return;
       }
 
       // 括弧・クォートの自動閉じ
@@ -1048,10 +1164,10 @@
     const newNoteBtn = document.getElementById('new-note-btn');
 
     function detectLanguage(filename) {
+      if (filename.endsWith('.json')) return 'JSON';
       if (filename.endsWith('.js')) return 'JavaScript';
       if (filename.endsWith('.ts')) return 'TypeScript';
       if (filename.endsWith('.py')) return 'Python';
-      if (filename.endsWith('.json')) return 'JSON';
       if (filename.endsWith('.html')) return 'HTML';
       if (filename.endsWith('.css')) return 'CSS';
       if (filename.endsWith('.sql')) return 'SQL';
@@ -1123,15 +1239,16 @@
     }
 
     newNoteBtn.addEventListener('click', () => {
-      const fileName = prompt('ファイル名を入力してください (例: memo.md, app.js):', 'note-' + (notes.length + 1) + '.md');
+      const fileName = prompt('ファイル名を入力してください (例: data.json, memo.md):', 'data-' + (notes.length + 1) + '.json');
       if (!fileName) return;
 
       const hasExt = /\.[a-zA-Z0-9]+$/.test(fileName.trim());
       const title = hasExt ? fileName.trim() : fileName.trim() + '.md';
+      const initialContent = title.endsWith('.json') ? '{\n  \n}' : '';
       const newNote = {
         id: Date.now().toString(),
         title,
-        content: '',
+        content: initialContent,
         updatedAt: new Date().toISOString()
       };
 
@@ -1274,7 +1391,7 @@
     }
 
     function renderDayEvents() {
-      selectedDateTitle.textContent = `📅 ${selectedDateKey} の予定`;
+      selectedDateTitle.textContent = `📅 ${selectedDateKey} の予定・メモ`;
       eventListEl.innerHTML = '';
 
       const dayEvents = events
@@ -1284,7 +1401,7 @@
       if (dayEvents.length === 0) {
         const empty = document.createElement('li');
         empty.className = 'empty-events';
-        empty.textContent = '// この日の予定はありません';
+        empty.textContent = '// この日の予定・メモはありません';
         eventListEl.appendChild(empty);
         return;
       }
@@ -1330,9 +1447,11 @@
     eventForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const time = document.getElementById('event-time').value;
-      const title = document.getElementById('event-title').value.trim();
+      const rawTitle = document.getElementById('event-title').value.trim();
       const description = document.getElementById('event-desc').value.trim();
-      if (!title) return;
+      if (!rawTitle && !description) return;
+
+      const title = rawTitle || '📝 メモ';
 
       const newEvent = {
         id: Date.now().toString(),
@@ -1353,7 +1472,7 @@
     });
 
     function deleteEvent(id) {
-      if (!confirm('この予定を削除しますか？')) return;
+      if (!confirm('この予定・メモを削除しますか？')) return;
       events = events.filter(ev => ev.id !== id);
       renderCalendar();
       renderDayEvents();
