@@ -14,13 +14,20 @@
       padding: 0;
     }
 
+    /* 完全等幅フォント定義（英数字＋日本語） */
+    :root {
+      --mono-font: 'SF Mono', 'Consolas', 'JetBrains Mono', 'Fira Code', 'BIZ UDGothic', 'Osaka-Mono', 'MS Gothic', 'Noto Sans Mono CJK JP', monospace;
+    }
+
     body {
       background: linear-gradient(135deg, #0d1117, #161b22);
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+      font-family: var(--mono-font);
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
       color: #c9d1d9;
     }
 
@@ -140,10 +147,10 @@
     .hidden { display: none !important; }
 
     /* ========================
-       メモ画面
+       メモ画面（IDE風）
        ======================== */
     .sidebar {
-      width: 270px;
+      width: 250px;
       background-color: #010409;
       border-right: 1px solid #30363d;
       display: flex;
@@ -240,6 +247,7 @@
       display: flex;
       flex-direction: column;
       background-color: #0d1117;
+      overflow: hidden;
     }
 
     .editor-tab {
@@ -257,27 +265,129 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      color: #e6edf3;
     }
-    .tab-info::before { content: "📝"; font-size: 10px; }
+    .tab-info::before { content: "📄"; font-size: 11px; }
 
     .last-edited {
       font-size: 11px;
+      color: #6e7681;
+    }
+
+    /* コードエディタ本体（行番号＋シンタックスハイライト＋透明Textarea） */
+    .code-editor-wrapper {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+      background-color: #0d1117;
+    }
+
+    .line-numbers {
+      width: 52px;
+      padding: 16px 10px 16px 0;
+      background-color: #0d1117;
+      border-right: 1px solid #21262d;
       color: #484f58;
+      font-family: var(--mono-font);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: right;
+      user-select: none;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .line-num {
+      height: 22.4px; /* 14px * 1.6 */
+    }
+    .line-num.active-line {
+      color: #c9d1d9;
+      font-weight: bold;
+    }
+
+    .editor-stage {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* 背面ハイライト層と前面入力層はフォント・余白・折り返しを1pxも狂わせず完全一致させる */
+    .highlight-layer,
+    textarea#editor {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 16px 20px;
+      margin: 0;
+      border: none;
+      font-family: var(--mono-font);
+      font-size: 14px;
+      line-height: 1.6;
+      letter-spacing: 0px;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+      font-variant-ligatures: none;
+      font-feature-settings: "liga" 0, "calt" 0;
+    }
+
+    .highlight-layer {
+      pointer-events: none;
+      color: #c9d1d9;
+      background-color: transparent;
+      z-index: 1;
     }
 
     textarea#editor {
-      flex: 1;
       background-color: transparent;
-      color: #58a6ff;
-      border: none;
-      padding: 20px;
-      font-family: inherit;
-      font-size: 14px;
-      line-height: 1.6;
+      color: transparent;
+      caret-color: #58a6ff;
       resize: none;
       outline: none;
-      caret-color: #58a6ff;
+      z-index: 2;
     }
+
+    textarea#editor::selection {
+      background: rgba(56, 139, 253, 0.35);
+    }
+
+    /* シンタックスハイライト色（文字幅を変えないため太字/斜体は使わない） */
+    .tok-comment { color: #8b949e; }
+    .tok-heading { color: #79c0ff; }
+    .tok-code    { color: #a5d6ff; background-color: rgba(110, 118, 129, 0.2); border-radius: 3px; }
+    .tok-string  { color: #a5d6ff; }
+    .tok-todo    { color: #0d1117; background-color: #d29922; border-radius: 2px; }
+    .tok-keyword { color: #ff7b72; }
+    .tok-number  { color: #79c0ff; }
+    .tok-bullet  { color: #3fb950; }
+
+    /* 下部VS Code風ステータスバー */
+    .ide-statusbar {
+      background-color: #161b22;
+      border-top: 1px solid #30363d;
+      padding: 4px 14px;
+      font-size: 11px;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .ide-status-group {
+      display: flex;
+      gap: 16px;
+    }
+
+    .ide-status-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ide-branch { color: #58a6ff; }
 
     /* ========================
        カレンダー画面
@@ -472,9 +582,9 @@
     .event-desc { font-size: 11px; color: #8b949e; margin-top: 4px; white-space: pre-wrap; }
     .empty-events { color: #484f58; font-size: 12px; text-align: center; margin-top: 20px; }
 
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #8b949e; }
   </style>
 </head>
@@ -502,11 +612,11 @@
       </div>
     </div>
 
-    <!-- Notes ビュー -->
+    <!-- Notes ビュー（IDE風エディタ） -->
     <div class="window-body" id="notes-view">
       <div class="sidebar">
         <div class="sidebar-header">
-          <span>Files</span>
+          <span>Explorer</span>
           <button class="add-btn" id="new-note-btn">+ New</button>
         </div>
         <ul class="file-list" id="file-list"></ul>
@@ -517,7 +627,28 @@
           <span class="tab-info" id="current-tab-title">loading...</span>
           <span class="last-edited" id="last-edited-time">--</span>
         </div>
-        <textarea id="editor" placeholder="// Type your text here..." spellcheck="false"></textarea>
+
+        <div class="code-editor-wrapper">
+          <div class="line-numbers" id="line-numbers"></div>
+          <div class="editor-stage">
+            <pre class="highlight-layer" id="highlight-layer" aria-hidden="true"></pre>
+            <textarea id="editor" placeholder="// Type your code or notes here..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+          </div>
+        </div>
+
+        <div class="ide-statusbar">
+          <div class="ide-status-group">
+            <span class="ide-status-item ide-branch">⎇ main</span>
+            <span class="ide-status-item" id="sb-lines">0 lines</span>
+            <span class="ide-status-item" id="sb-chars">0 chars</span>
+          </div>
+          <div class="ide-status-group">
+            <span class="ide-status-item" id="sb-cursor">Ln 1, Col 1</span>
+            <span class="ide-status-item">Spaces: 2</span>
+            <span class="ide-status-item">UTF-8</span>
+            <span class="ide-status-item" id="sb-lang">Markdown</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -563,7 +694,7 @@
 
   <script>
     // ========================
-    // Service Worker 登録（PWA・オフライン起動用）
+    // Service Worker 登録
     // ========================
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -573,7 +704,7 @@
     }
 
     // ========================
-    // ローカルキャッシュ＆同期キュー管理
+    // ローカルキャッシュ＆同期キュー
     // ========================
     const CACHE_NOTES_KEY = 'ws_cache_notes_v1';
     const CACHE_EVENTS_KEY = 'ws_cache_events_v1';
@@ -584,7 +715,7 @@
       {
         id: '1',
         title: 'welcome.md',
-        content: '// オフライン対応マルチメモ＆カレンダーへようこそ！\n// ネットがない環境でも編集でき、復帰時に自動で同期されます。',
+        content: '# GitHub Style Workspace\n\n// 等幅フォント & プログラミングエディタ風モード\nconst status = "READY";\n\n- Tabキーでインデント (Spaces: 2)\n- Enterキーで自動インデント\n- 括弧の自動補完 () {} [] ""\n\nTODO: 自由にメモやコードを書いてみよう！',
         updatedAt: new Date().toISOString()
       }
     ];
@@ -617,9 +748,7 @@
       }
     }
 
-    // キューに操作を追加
     function enqueueAction(action) {
-      // 同じノートの連続した内容更新は1つにまとめて効率化
       if (action.type === 'UPDATE_NOTE_CONTENT' && syncQueue.length > 0) {
         const last = syncQueue[syncQueue.length - 1];
         if (last.type === 'UPDATE_NOTE_CONTENT' && last.id === action.id) {
@@ -634,7 +763,6 @@
       processSyncQueue();
     }
 
-    // キューを順番にサーバーへ送信
     async function processSyncQueue() {
       if (isSyncing) return;
       if (!navigator.onLine || syncQueue.length === 0) {
@@ -679,13 +807,11 @@
             throw new Error('Server unreachable');
           }
 
-          // 成功したら先頭から削除
           syncQueue.shift();
           saveLocalCaches();
         }
         updateSyncStatusBadge();
       } catch (err) {
-        // ネットワークエラー時はキューを残してオフライン表示にする
         const pending = syncQueue.length > 0 ? ` (未同期:${syncQueue.length})` : '';
         setStatus(`OFFLINE${pending}`, 'offline');
       } finally {
@@ -693,7 +819,6 @@
       }
     }
 
-    // サーバーから最新データを取得（未同期キューが空のときだけ上書き）
     async function syncFromServer() {
       await processSyncQueue();
       if (!navigator.onLine || syncQueue.length > 0) {
@@ -711,7 +836,6 @@
         const serverNotes = await notesRes.json();
         const serverEvents = await eventsRes.json();
 
-        // 通信中にユーザーが操作してキューが積まれていなければ反映
         if (syncQueue.length === 0) {
           notes = serverNotes;
           events = serverEvents;
@@ -726,15 +850,9 @@
       }
     }
 
-    window.addEventListener('online', () => {
-      syncFromServer();
-    });
-    window.addEventListener('offline', () => {
-      updateSyncStatusBadge();
-    });
-    document.getElementById('manual-sync-btn').addEventListener('click', () => {
-      syncFromServer();
-    });
+    window.addEventListener('online', () => syncFromServer());
+    window.addEventListener('offline', () => updateSyncStatusBadge());
+    document.getElementById('manual-sync-btn').addEventListener('click', () => syncFromServer());
 
     // ========================
     // ユーティリティ＆モード切替
@@ -775,15 +893,171 @@
     });
 
     // ========================
+    // IDE風エディタ（シンタックスハイライト・行番号・自動補完）
+    // ========================
+    const editor = document.getElementById('editor');
+    const highlightLayer = document.getElementById('highlight-layer');
+    const lineNumbersEl = document.getElementById('line-numbers');
+    const sbLines = document.getElementById('sb-lines');
+    const sbChars = document.getElementById('sb-chars');
+    const sbCursor = document.getElementById('sb-cursor');
+    const sbLang = document.getElementById('sb-lang');
+
+    function highlightSyntax(text) {
+      const safeText = text.endsWith('\n') ? text + ' ' : text;
+      const escaped = safeText
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      const tokenRegex = /(\/\/.*$|\/\*[\s\S]*?\*\/)|(^#{1,6}\s.*$)|(`[^`\n]*`)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\b(?:TODO|FIXME|NOTE|BUG)\b)|(\b(?:const|let|var|function|return|if|else|for|while|switch|case|break|import|export|from|async|await|try|catch|class|new|true|false|null|undefined|def|print|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE)\b)|(\b\d+(?:\.\d+)?\b)|(^\s*[-*]\s(?:\[[ xX]\]\s)?)/gm;
+
+      return escaped.replace(tokenRegex, (match, comment, heading, code, str, todo, keyword, num, bullet) => {
+        if (comment) return `<span class="tok-comment">${comment}</span>`;
+        if (heading) return `<span class="tok-heading">${heading}</span>`;
+        if (code)    return `<span class="tok-code">${code}</span>`;
+        if (str)     return `<span class="tok-string">${str}</span>`;
+        if (todo)    return `<span class="tok-todo">${todo}</span>`;
+        if (keyword) return `<span class="tok-keyword">${keyword}</span>`;
+        if (num)     return `<span class="tok-number">${num}</span>`;
+        if (bullet)  return `<span class="tok-bullet">${bullet}</span>`;
+        return match;
+      });
+    }
+
+    function getCursorPosition() {
+      const pos = editor.selectionStart || 0;
+      const textUpToCursor = editor.value.slice(0, pos);
+      const lines = textUpToCursor.split('\n');
+      return {
+        line: lines.length,
+        col: lines[lines.length - 1].length + 1
+      };
+    }
+
+    function updateEditorUI() {
+      const val = editor.value;
+      const totalLines = val.split('\n').length;
+      const cursor = getCursorPosition();
+
+      // ハイライト更新
+      highlightLayer.innerHTML = highlightSyntax(val);
+
+      // 行番号更新
+      let linesHtml = '';
+      for (let i = 1; i <= totalLines; i++) {
+        const cls = i === cursor.line ? 'line-num active-line' : 'line-num';
+        linesHtml += `<div class="${cls}">${i}</div>`;
+      }
+      lineNumbersEl.innerHTML = linesHtml;
+
+      // ステータスバー更新
+      sbLines.textContent = `${totalLines} lines`;
+      sbChars.textContent = `${val.length} chars`;
+      sbCursor.textContent = `Ln ${cursor.line}, Col ${cursor.col}`;
+    }
+
+    // スクロール完全同期
+    editor.addEventListener('scroll', () => {
+      highlightLayer.scrollTop = editor.scrollTop;
+      highlightLayer.scrollLeft = editor.scrollLeft;
+      lineNumbersEl.scrollTop = editor.scrollTop;
+    });
+
+    // カーソル移動で行番号ハイライトとステータスバーを更新
+    editor.addEventListener('click', updateEditorUI);
+    editor.addEventListener('keyup', updateEditorUI);
+
+    // プログラミングエディタ風キー操作（Tab・Enterインデント・括弧自動補完）
+    const PAIRS = { '(': ')', '{': '}', '[': ']', '"': '"', "'": "'", '`': '`' };
+
+    editor.addEventListener('keydown', (e) => {
+      const start = editor.selectionStart;
+      const end = editor.selectionEnd;
+      const val = editor.value;
+
+      // Tab / Shift+Tab で2スペースインデント
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        if (!e.shiftKey) {
+          editor.value = val.slice(0, start) + '  ' + val.slice(end);
+          editor.selectionStart = editor.selectionEnd = start + 2;
+        } else {
+          const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+          if (val.slice(lineStart, lineStart + 2) === '  ') {
+            editor.value = val.slice(0, lineStart) + val.slice(lineStart + 2);
+            editor.selectionStart = editor.selectionEnd = Math.max(lineStart, start - 2);
+          }
+        }
+        editor.dispatchEvent(new Event('input'));
+        return;
+      }
+
+      // Enter で現在行のインデントを引き継ぐ
+      if (e.key === 'Enter') {
+        const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+        const currentLine = val.slice(lineStart, start);
+        const indentMatch = currentLine.match(/^\s*/);
+        const indent = indentMatch ? indentMatch[0] : '';
+        if (indent.length > 0) {
+          e.preventDefault();
+          editor.value = val.slice(0, start) + '\n' + indent + val.slice(end);
+          editor.selectionStart = editor.selectionEnd = start + 1 + indent.length;
+          editor.dispatchEvent(new Event('input'));
+          return;
+        }
+      }
+
+      // 括弧・クォートの自動閉じ
+      if (PAIRS[e.key]) {
+        e.preventDefault();
+        const closeChar = PAIRS[e.key];
+        const selected = val.slice(start, end);
+        editor.value = val.slice(0, start) + e.key + selected + closeChar + val.slice(end);
+        if (selected.length > 0) {
+          editor.selectionStart = start + 1;
+          editor.selectionEnd = end + 1;
+        } else {
+          editor.selectionStart = editor.selectionEnd = start + 1;
+        }
+        editor.dispatchEvent(new Event('input'));
+        return;
+      }
+
+      // 空ペアの直中で Backspace したら両方消す
+      if (e.key === 'Backspace' && start === end && start > 0) {
+        const prev = val[start - 1];
+        const next = val[start];
+        if (PAIRS[prev] && PAIRS[prev] === next) {
+          e.preventDefault();
+          editor.value = val.slice(0, start - 1) + val.slice(start + 1);
+          editor.selectionStart = editor.selectionEnd = start - 1;
+          editor.dispatchEvent(new Event('input'));
+        }
+      }
+    });
+
+    // ========================
     // Notes ロジック
     // ========================
     let activeNoteId = localStorage.getItem(ACTIVE_NOTE_KEY) || (notes[0] && notes[0].id);
 
     const fileListEl = document.getElementById('file-list');
-    const editor = document.getElementById('editor');
     const currentTabTitle = document.getElementById('current-tab-title');
     const lastEditedTimeEl = document.getElementById('last-edited-time');
     const newNoteBtn = document.getElementById('new-note-btn');
+
+    function detectLanguage(filename) {
+      if (filename.endsWith('.js')) return 'JavaScript';
+      if (filename.endsWith('.ts')) return 'TypeScript';
+      if (filename.endsWith('.py')) return 'Python';
+      if (filename.endsWith('.json')) return 'JSON';
+      if (filename.endsWith('.html')) return 'HTML';
+      if (filename.endsWith('.css')) return 'CSS';
+      if (filename.endsWith('.sql')) return 'SQL';
+      if (filename.endsWith('.txt')) return 'Plain Text';
+      return 'Markdown';
+    }
 
     function renderSidebar() {
       fileListEl.innerHTML = '';
@@ -834,10 +1108,12 @@
 
       editor.value = activeNote.content;
       currentTabTitle.textContent = activeNote.title;
+      sbLang.textContent = detectLanguage(activeNote.title);
       lastEditedTimeEl.textContent = `最終更新: ${formatTimestamp(activeNote.updatedAt)}`;
       if (!notesView.classList.contains('hidden')) {
         windowTitle.textContent = `workspace -- ${activeNote.title}`;
       }
+      updateEditorUI();
       renderSidebar();
     }
 
@@ -847,10 +1123,11 @@
     }
 
     newNoteBtn.addEventListener('click', () => {
-      const fileName = prompt('ファイル名を入力してください:', 'note-' + (notes.length + 1) + '.md');
+      const fileName = prompt('ファイル名を入力してください (例: memo.md, app.js):', 'note-' + (notes.length + 1) + '.md');
       if (!fileName) return;
 
-      const title = fileName.endsWith('.md') || fileName.endsWith('.txt') ? fileName : fileName + '.md';
+      const hasExt = /\.[a-zA-Z0-9]+$/.test(fileName.trim());
+      const title = hasExt ? fileName.trim() : fileName.trim() + '.md';
       const newNote = {
         id: Date.now().toString(),
         title,
@@ -889,6 +1166,7 @@
 
     let saveTimeout = null;
     editor.addEventListener('input', () => {
+      updateEditorUI();
       setStatus('SAVING...', 'saving');
       clearTimeout(saveTimeout);
       saveTimeout = setTimeout(() => {
@@ -1103,9 +1381,7 @@
       renderDayEvents();
     });
 
-    // ========================
-    // 初期起動：まずローカルキャッシュを即描画し、裏でサーバーと同期
-    // ========================
+    // 初期起動
     loadActiveNote();
     renderCalendar();
     renderDayEvents();
